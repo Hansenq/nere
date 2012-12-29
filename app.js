@@ -38,10 +38,10 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 
 
-// Code for Heroku socket.io compatibility
+// Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 1); 
+  io.set("polling duration", 5); 
 });
 
 io.sockets.on('connection', function (socket) {
