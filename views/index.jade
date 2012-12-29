@@ -1,0 +1,53 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}!
+  p Testing some Twitter Bootstrap stuff...
+  button.btn.btn-primary(data-toggle="button") Single Toggle!
+  br
+  br
+  p Here's an icon: <i class="icon-search"></i>
+  br
+  p Your IP address is: #{ipaddress}
+  br
+  p The websocket is sending you a message! Here it is...
+  .yourname
+  br
+  p List of all clients with your IP address: 
+  .allusers
+  br
+  p List of files that people have sent you:
+  .allfiles
+
+  script
+
+    var socket = io.connect('http://localhost');
+
+    socket.on('this', function (data) {
+      $('.welcome').append(data);
+      socket.emit('join room', !{ipaddress});
+      socket.emit('setname', prompt('What is your name?'));
+      socket.emit('get all nearby');
+    });
+    
+    socket.on('gotname', function (data){
+      $('.yourname').append('Your name is: ' + data);
+    });
+
+    socket.on('allnearby', function (data){
+      jQuery('.allusers').html('');
+      for (var i=0; i<data.length; i++){
+        $('.allusers').append('<a onclick="sendFile(this.id)" id="' + data[i] + '">Send file to ' + data[i] + '</a><br>');
+      }
+    });
+
+    socket.on('file received', function (data){
+      $('.allfiles').append('<a href="' + data + '" target="_blank">New link!</a><br>');
+    });
+
+    function sendFile(userid){
+      filepicker.pick({mimetypes:['image/*','text/*']}, function(fpfile){
+        socket.emit('file sent', fpfile.url, userid);
+      });
+    }
