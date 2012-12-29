@@ -88,9 +88,12 @@ io.sockets.on('connection', function (socket) {
       }
     }
     io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
-
   });
+});
 
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
 });
 
 var port = process.env.PORT || app.get('port');
