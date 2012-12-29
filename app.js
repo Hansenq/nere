@@ -41,7 +41,7 @@ app.get('/users', user.list);
 // Code for Heroku socket.io compatibility
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
+  io.set("polling duration", 1); 
 });
 
 io.sockets.on('connection', function (socket) {
