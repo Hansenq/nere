@@ -30,8 +30,19 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+app.configure('production', function() {
+  app.use(express.errorHandler());
+});
+
 app.get('/', routes.index);
 app.get('/users', user.list);
+
+
+// Code for Heroku socket.io compatibility
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
 
 io.sockets.on('connection', function (socket) {
 
@@ -91,13 +102,8 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
-
 var port = process.env.PORT || app.get('port');
 
 server.listen(port, function(){
-  console.log("Express server listening on port " + port);
+  console.log("Express server listening on port " + port + " in " + app.settings.env + " mode");
 });

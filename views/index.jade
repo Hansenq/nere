@@ -22,7 +22,9 @@ block content
 
   script
 
-    var socket = io.connect('http://localhost');
+    var socket = io.connect(window.location.hostname);
+    // try also = new io.Socket() if not working
+
 
     socket.on('this', function (data) {
       $('.welcome').append(data);
