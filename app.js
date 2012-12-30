@@ -34,72 +34,103 @@ app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
+// gives X amount of time to reopen connection
+io.configure(function() {
+  io.set('close timeout', 5);
+});
+
+// App Routes
+
 app.get('/', routes.index);
 app.get('/users', user.list);
+
 
 
 // Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 5); 
+  io.set("polling duration", 1); 
 });
 
 io.sockets.on('connection', function (socket) {
 
+  function getNearbyNames() {
+    var nearby = io.sockets.clients(socket.ip);
+    var nearbyNames = [];
+    for (var i=0; i<nearby.length; i++){
+      nearbyNames[nearbyNames.length] = nearby[i].clientName;
+    }
+    return nearbyNames;
+  };
+
+  // data not displaying, kinda unnecessary
   socket.emit('this', 'Number of users looking at this site: ');
   
   socket.on('join room', function (ipaddress) {
     console.log('Joining room ' + ipaddress);
     socket.ip = ipaddress;
-    socket.join(ipaddress);
+    socket.join(ipaddress); 
   });
   
   socket.on('setname', function (name) {
-    socket.emit('gotname', name);
-    socket.clientName = name;
-
-    // We're using the same function in 3 different instances.
-    // Create and name a separate function for this...
-    var nearby = io.sockets.clients(socket.ip);
-    var nearbyNames = [];
-    for (var i=0; i<nearby.length; i++){
-      nearbyNames[nearbyNames.length] = nearby[i].clientName;
+    var nearbyNames = getNearbyNames();
+    var numNames = 0;
+    for (var x in nearbyNames) {
+      if (name === nearbyNames[x])
+        numNames++;
     }
+    if (numNames != 0) {
+      name = name + " (" + numNames + ")";
+    }
+    socket.clientName = name;
+    socket.emit('gotname', name);
     io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
 
+    // sends connected in chat box
+    socket.broadcast.to(socket.ip).emit('announcement', socket.clientName + ' connected.');
   });
 
   socket.on('get all nearby', function () {
-    var nearby = io.sockets.clients(socket.ip);
-    var nearbyNames = [];
-    for (var i=0; i<nearby.length; i++){
-      nearbyNames[nearbyNames.length] = nearby[i].clientName;
-    }
-    socket.emit('allnearby', nearbyNames);
+    socket.to(socket.ip).emit('allnearby', getNearbyNames());
   });
 
-  socket.on('file sent', function (fileURL, receiverName) {
+  socket.on('file sent', function (fileURL, receiverName, senderName) {
     var nearby = io.sockets.clients(socket.ip);
     for (var i=0; i<nearby.length; i++){
       console.log(nearby[i].clientName);
       if (nearby[i].clientName === receiverName){
-        nearby[i].emit('file received', fileURL);
+        nearby[i].emit('file received', fileURL, senderName);
       }
     }
   });
 
   socket.on('disconnect', function () {
     console.log('Leaving room ' + socket.ip);
+    socket.leave(socket.ip);
+    var name = socket.clientName;
+    var nearbyNames = getNearbyNames();
+    delete nearbyNames[socket.clientName];
+    socket.broadcast.to(socket.ip).emit('allnearby', nearbyNames);
 
-    var nearby = io.sockets.clients(socket.ip);
-    var nearbyNames = [];
-    for (var i=0; i<nearby.length; i++){
-      if (nearby[i].clientName != socket.clientName){
-        nearbyNames[nearbyNames.length] = nearby[i].clientName;
-      }
-    }
-    io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
+    // sends disconnect in chat box
+    socket.broadcast.to(socket.ip).emit('announcement', name + ' disconnected.');
   });
+
+
+
+
+  // Below runs the chat client!
+  socket.on('userMessage', function(msg, func) {
+    func(msg);
+    socket.to(socket.ip).broadcast.emit('userMessage', socket.clientName, msg);
+  });
+
+
+
+
+
+
+
 });
 
 var port = process.env.PORT || app.get('port');

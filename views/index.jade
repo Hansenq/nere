@@ -19,17 +19,72 @@ block content
   br
   p List of files that people have sent you:
   .allfiles
+  br
+  br
+  br
+  p There's a chat client below here!
+  #chatClient
+    #connecting
+      .wrap Connected with socket.io to node.js server.
+    #messages
+      #users
+      #lines
+    form#send-message
+      input#message
+      button Send
 
   script
 
-    var socket = io.connect(window.location.hostname);
-    // try also = new io.Socket() if not working
+    function setCookie(c_name,value,exdays)
+    {
+      var exdate=new Date();
+      exdate.setDate(exdate.getDate() + exdays);
+      var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+      document.cookie=c_name + "=" + c_value;
+    }
 
+    function getCookie(c_name)
+    {
+    var i,x,y,ARRcookies=document.cookie.split(";");
+    for (i=0;i<ARRcookies.length;i++)
+    {
+      x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+      y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+      x=x.replace(/^\s+|\s+$/g,"");
+      if (x==c_name)
+        {
+        return unescape(y);
+        }
+      }
+    }
+
+    function checkCookie()
+    {
+    var username=getCookie("username");
+      if (username!=null && username!="")
+      {
+        return username;
+      }
+    else 
+      {
+      username=prompt("Please enter your name:","");
+      if (username!=null && username!="")
+        {
+        // default 5 days
+        setCookie("username",username,5);
+        return username;
+        }
+      }
+    }
+
+    var socket = io.connect(window.location.hostname);
 
     socket.on('this', function (data) {
       $('.welcome').append(data);
       socket.emit('join room', !{ipaddress});
-      socket.emit('setname', prompt('What is your name?'));
+      var name = checkCookie();;
+      socket.clientName = name;
+      socket.emit('setname', name);
       socket.emit('get all nearby');
     });
     
@@ -40,16 +95,83 @@ block content
     socket.on('allnearby', function (data){
       jQuery('.allusers').html('');
       for (var i=0; i<data.length; i++){
-        $('.allusers').append('<a onclick="sendFile(this.id)" id="' + data[i] + '">Send file to ' + data[i] + '</a><br>');
+        if (!(data[i] === socket.clientName)){
+          $('.allusers').append('<a onclick="sendFile(this.id, socket.clientName)" id="' + data[i] + '">Send file to ' + data[i] + '</a><br>');
+        }
       }
     });
 
-    socket.on('file received', function (data){
-      $('.allfiles').append('<a href="' + data + '" target="_blank">New link!</a><br>');
+    // '
+    socket.on('file received', function (data, senderName){
+      $('.allfiles').append('<a href="' + data + '" target="_blank">New link from ' + senderName + '!</a><br>');
+      message('System', senderName + ' has send you a <a href="' + data + '" target="_blank">file</a>!<br>');
     });
 
-    function sendFile(userid){
-      filepicker.pick({mimetypes:['image/*','text/*']}, function(fpfile){
-        socket.emit('file sent', fpfile.url, userid);
+    
+    function sendFile(recId, sendId){
+      filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
+        socket.emit('file sent', fpfile.url, recId, sendId);
       });
     }
+
+
+
+    // '*/
+    // Below is code for the chat client!
+    socket.on('joinChat', function() {
+      $('#chatClient').addClass('connected');
+    })
+
+    socket.on('announcement', function (msg) {
+      $('#lines').append($('<p>').append($('<em>').text(msg)));
+    });
+
+    socket.on('allUsers', function(users) {
+      $('#users').empty().append($('<span>Online: </span>'));
+      for (var i in nicknames) 
+        $('#users').append($('<b>').text(nicknames[i]));
+    });
+
+    socket.on('userMessage', message);
+
+
+    // System Messages!
+    socket.on('reconnected', function() {
+      message('System', 'Reconnected to server.');
+    });
+    socket.on('reconnecting', function() {
+      message('System', 'Reconnecting to server...');
+    });
+    socket.on('error', function(e) {
+      message('System', e ? e : 'An unknown error occurred.');
+    });
+
+
+    function message (from, msg) {
+      $('#lines').append($('<p>').append($('<b>').text(from), msg));
+      $('#lines').get(0).scrollTop = 10000000;
+    }
+
+
+    // DOM manipulation
+    $(function() {
+      $('#send-message').submit(function() {
+        //message('me', $('message').val());
+        socket.emit('userMessage', $('#message').val(), function(msg) {
+            message('me', msg);
+          });
+        clear();
+        $('#lines').get(0).scrollTop = 10000000;
+        return false;
+      });
+
+      function clear() {
+        $('#message').val('').focus();
+      };
+    });
+
+
+
+
+
+
