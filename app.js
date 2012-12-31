@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 
-
+var express = require('express')
   , app = express()
   , routes = require('./routes')
   , user = require('./routes/user')
