@@ -1,4 +1,5 @@
 
+
 // Functions to store, get, and check cookies of usernames
 function setCookie(c_name, value, exdays)
 {
@@ -132,3 +133,12 @@ $(function() {
     $('#message').val('').focus();
   };
 });
+
+$(".user-block").hover(
+  function(){
+    $(this).css("background-color", "#f0f0f0");
+  },
+  function(){
+    $(this).css("background-color", "#ffffff");
+  }
+);

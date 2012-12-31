@@ -1,39 +1,46 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}!
-  p Testing some Twitter Bootstrap stuff...
-  button.btn.btn-primary(data-toggle="button") Single Toggle!
-  br
-  br
-  p Here's an icon: <i class="icon-search"></i>
-  br
-  p Your IP address is: #{ipaddress}
-  br
-  p The websocket is sending you a message! Here it is...
-  .yourname
-  br
-  p List of all clients with your IP address: 
-  .allusers
-  br
-  p List of files that people have sent you:
-  .allfiles
-  br
-  br
-  br
-  p There's a chat client below here!
-  #chatClient
-    #connecting
-      .wrap Connected with socket.io to node.js server.
-    #messages
-      #users
-      #lines
-    form#send-message
-      input#message
-      button Send
-
-
-
-
-
+  .navbar.navbar-fixed-top
+    .navbar-inner
+      .container
+        a.brand(href='#') 
+        ul.nav
+          li.active
+            a(href='#') Workspace
+          li
+            a(href='#') About
+          li
+            a(href='#') Contact Us
+  .infobar
+    strong Stanford, California
+    strong(style='float: right;') Lobby #{parsedip}
+  .sidebar
+    .self-block
+      strong You:
+      &nbsp;&nbsp;
+      input(type='text', value='eUfgKo13ElUfdiaD_HZK')
+    .file-sender
+      button.btn.btn-primary.btn-large.btn-block Send New File
+    .title-block
+      strong People Near You
+      &nbsp;
+      i.icon-globe
+    .user-block
+      i.icon-user
+      &nbsp;&nbsp;
+      strong Hansen
+    .user-block
+      i.icon-user
+      &nbsp;&nbsp;
+      strong Ray
+    .user-block
+      i.icon-user
+      &nbsp;&nbsp;
+      strong Mv2JQcUsmKCDoE8GQbpV
+  .main
+    .main-block
+      .posts-container
+  .messenger
+    .chat-sender
+      input(type='text', placeholder='What\'s on your mind?')
