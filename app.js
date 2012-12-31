@@ -46,7 +46,7 @@ app.get('/users', user.list);
 // Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 3); 
+  io.set("polling duration", 10); 
 });
 
 io.sockets.on('connection', function (socket) {
@@ -59,10 +59,6 @@ io.sockets.on('connection', function (socket) {
     }
     return nearbyNames;
   };
-  
-  console.log('Joining room ' + socket.handshake.address.address);
-  socket.ip = socket.handshake.address.address;
-  socket.join(socket.ip);
 
   socket.on('Set client name', function (name) {
     socket.clientName = name;
@@ -92,7 +88,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('disconnect', function () {
     console.log('Leaving room ' + socket.ip);
     socket.broadcast.to(socket.ip).emit('Delete name', socket.clientName);
-    socket.leave(socket.ip);
+    //socket.leave(socket.ip);
   });
 
   /*

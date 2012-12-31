@@ -77,7 +77,7 @@ socket.on('Display all nearby names', function (allNearby){
   for (var i=0; i<allNearby.length; i++){
     //if (!(allNearby[i] === socket.clientName)){
       $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + allNearby[i] + '</strong></div>');
-    //}no
+    //}
   }
 });
 
