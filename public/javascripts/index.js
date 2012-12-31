@@ -80,6 +80,7 @@ socket.on('Delete name', function (name){
       $(this).remove();
     }
   });
+  console.log("Clap your hands if you see this!");
 });
 
 /*
