@@ -39,10 +39,8 @@ io.configure(function() {
 });
 
 // App Routes
-
 app.get('/', routes.index);
 app.get('/users', user.list);
-
 
 
 // Code for Heroku socket.io compatibility; default 10 seconds
@@ -53,12 +51,6 @@ io.configure(function () {
 
 io.sockets.on('connection', function (socket) {
 
-  var address = socket.handshake.address;
-  console.log("New connection from " + address.address + ":" + address.port);
-
-  // data not displaying, data kinda unnecessary
-  socket.emit('this', 'Number of users looking at this site: ');
-
   function getNearbyNames() {
     var nearby = io.sockets.clients(socket.ip);
     var nearbyNames = [];
@@ -68,26 +60,22 @@ io.sockets.on('connection', function (socket) {
     return nearbyNames;
   };
   
-  socket.on('join room', function () {
-    ipaddress = address.address;
-    console.log('Joining room ' + ipaddress);
-    socket.ip = ipaddress;
-    socket.join(ipaddress); 
-  });
-  
-  // Returns false if name already exists in chat; true otherwise
-  socket.on('setname', function (name) {
-    var nearbyNames = getNearbyNames();
+  console.log('Joining room ' + socket.handshake.address.address);
+  socket.ip = socket.handshake.address.address;
+  socket.join(socket.ip);
+
+  socket.on('Set client name', function (name) {
     socket.clientName = name;
-    socket.emit('gotname', name);
-    io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
-    // sends connected in chat box
-    socket.broadcast.to(socket.ip).emit('announcement', socket.clientName + ' connected.');
+    var nearbyNames = getNearbyNames();
+    socket.emit('Display client name', name);
+    io.sockets.in(socket.ip).emit('Display new nearby name', name);
   });
 
-  socket.on('get all nearby', function () {
-    io.sockets.in(socket.ip).emit('allnearby', getNearbyNames());
+  socket.on('Get all nearby users', function () {
+    io.sockets.in(socket.ip).emit('Display all nearby names', getNearbyNames());
   });
+
+  /*
 
   socket.on('file sent', function (fileURL, receiverName, senderName) {
     var nearby = io.sockets.clients(socket.ip);
@@ -99,26 +87,24 @@ io.sockets.on('connection', function (socket) {
     }
   });
 
+  */
+
   socket.on('disconnect', function () {
     console.log('Leaving room ' + socket.ip);
+    socket.broadcast.to(socket.ip).emit('Delete name', socket.clientName);
     socket.leave(socket.ip);
-    var name = socket.clientName;
-    var nearbyNames = getNearbyNames();
-    delete nearbyNames[socket.clientName];
-    socket.broadcast.to(socket.ip).emit('allnearby', nearbyNames);
-
-    // sends disconnect in chat box
-    socket.broadcast.to(socket.ip).emit('announcement', name + ' disconnected.');
   });
 
-
-
+  /*
 
   // Below runs the chat client!
   socket.on('userMessage', function(msg, func) {
     func(msg);
     socket.to(socket.ip).broadcast.emit('userMessage', socket.clientName, msg);
   });
+
+  */
+
 });
 
 var port = process.env.PORT || app.get('port');
