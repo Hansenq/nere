@@ -1,5 +1,3 @@
-
-
 // Functions to store, get, and check cookies of usernames
 function setCookie(c_name, value, exdays)
 {
@@ -46,6 +44,14 @@ function checkCookie()
 
 // Begin use of socket.io
 var socket = io.connect(window.location.hostname);
+
+socket.on('this', function (data) {
+  //$('.welcome').append(data);     no .welcome found
+  socket.emit('join room', !{ipaddress});
+  var name = checkCookie();
+  socket.emit('setname', name);
+  socket.emit('get all nearby');
+});
 
 socket.on('gotname', function (data){
   $('.yourname').append('Your name is: ' + data);
