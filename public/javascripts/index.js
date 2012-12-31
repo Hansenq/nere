@@ -83,7 +83,7 @@ socket.on('Display all nearby names', function (allNearby){
 
 socket.on('Delete name', function (name){
   $('.user-block').each(function(){
-    if ($(this).html() === '<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>')){
+    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong>'){
       $(this).remove();
     }
   });
