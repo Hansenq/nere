@@ -47,7 +47,7 @@ function checkCookie()
 
 */
 
-// Begin use of socket.io
+// Begin using socket.io
 var socket = io.connect(window.location.hostname);
 socket.emit('Set client name', prompt("Please enter your name:", ""));
 socket.emit('Get all nearby users');
@@ -64,20 +64,13 @@ socket.on('Display client name', function (name){
 });
 
 socket.on('Display new nearby name', function (name){
-  // If this client is NOT the newly joined user, append the new name
-  if (name === socket.clientName){
-     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
-  }
+  $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
 });
 
-socket.on('Display all nearby names', function (allNearby){
-  // First empty existing list of users
-  jQuery('.users').html('');
-  // Display all users in lobby, except for client's own name
+socket.on('Display all lobby names', function (allNearby){
+  // Display all users in lobby, including client's own name
   for (var i=0; i<allNearby.length; i++){
-    //if (!(allNearby[i] === socket.clientName)){
-      $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + allNearby[i] + '</strong></div>');
-    //}
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + allNearby[i] + '</strong></div>');
   }
 });
 
