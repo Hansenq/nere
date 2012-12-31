@@ -52,13 +52,6 @@ var socket = io.connect(window.location.hostname);
 socket.emit('Set client name', prompt("Please enter your name:", ""));
 socket.emit('Get all lobby users');
 
-/*socket.on('this', function (data) {
-  //$('.welcome').append(data);     no .welcome found
-  socket.emit('join room');
-  var name = checkCookie();
-  socket.emit('setname', name);
-  socket.emit('get all nearby');*/
-
 socket.on('Display client name', function (name){
   $('.self-block input').val(name);
 });
@@ -153,7 +146,7 @@ $(function() {
 
 */
 
-// DOM manipulation
+// Making things pretty
 $(".user-block").hover(
   function(){
     $(this).css("background-color", "#f0f0f0");
