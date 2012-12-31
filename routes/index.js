@@ -9,6 +9,7 @@ exports.index = function(req, res){
 
   res.render('index', {
     title: 'nere',
-    ipaddress: JSON.stringify(ip)
+    ipaddress: JSON.stringify(ip),
+    parsedip: ip
   });
 };

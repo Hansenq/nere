@@ -1,163 +1,134 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.navbar .container {
+  width: 90%;
 }
 
-a {
-  color: #00B7FF;
+.infobar {
+  position: fixed;
+  height: 35px;
+  width: 100%;
+  top: 40px;
+  left: 0;
+  background-color: #333333;
+  color: white;
+  z-index: 1;
 }
 
+.infobar strong{
+  margin-left: 20px;
+  margin-right: 20px;
+  line-height: 35px;
+}
 
+.sidebar {
+  position: fixed;
+  height: 100%;
+  width: 275px;
+  top: 0;
+  right: 0;
+  padding-top: 75px;
+  border-left: 3px solid #333333;
+  z-index: 0;
+  background-image:url("/subtlepatterns/gray_jean/gray_jean.png");
+  background-repeat:repeat;
+}
 
-/* Copied from github examples */
+.sidebar .self-block {
+  border-bottom: 3px solid #333333;
+  padding: 20px;
+  background-color: #f7f7f7;
+}
 
-#chat,
-#messages {
-  width: 600px;
-}
-#chat {
-  position: relative;
-  border: 1px solid #ccc;
-}
-#messages {
-  height: 380px;
-  background: #eee;
-}
-#messages em {
-  text-shadow: 0 1px 0 #fff;
-  color: #999;
-}
-#messages p {
-  padding: 0;
+.self-block input{
   margin: 0;
-  font: 12px Helvetica, Arial;
-  padding: 5px 10px;
+  width: 150px;
 }
-#messages p b {
-  display: inline-block;
-  padding-right: 10px;
+
+.sidebar .title-block {
+  border-bottom: 1px solid #aaaaaa;
+  padding: 5px 0px 5px 75px;
+  background-color: #fafafa;
+  cursor: default;
+  background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+  background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  background-repeat: repeat-x;
 }
-#messages p:nth-child(even) {
-  background: #fafafa;
+
+.sidebar .user-block {
+  border-bottom: 1px solid #aaaaaa;
+  padding: 20px;
+  background-color: #ffffff;
+  cursor: default;
 }
-#messages #users {
-  background: #ccc;
-  padding: 2px 4px 4px;
-  font: 11px Helvetica;
+
+.file-sender {
+  border-bottom: 3px solid #333333;
 }
-#messages #users span {
-  color: #000;
-}
-#messages #users b {
-  display: inline-block;
-  color: #fff;
-  background: #999;
-  padding: 3px 6px;
-  margin-right: 5px;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  text-shadow: 0 1px 0 #666;
-}
-#messages #lines {
-  height: 355px;
-  overflow: auto;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-#messages #lines::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-#messages #lines::-webkit-scrollbar-button:start:decrement,
-#messages #lines ::-webkit-scrollbar-button:end:increment {
-  display: block;
-  height: 10px;
-}
-#messages #lines::-webkit-scrollbar-button:vertical:increment {
-  background-color: #fff;
-}
-#messages #lines::-webkit-scrollbar-track-piece {
-  background-color: #fff;
-  -webkit-border-radius: 3px;
-}
-#messages #lines::-webkit-scrollbar-thumb:vertical {
+
+.file-sender .btn-block{
+  font-weight: bold;
   height: 50px;
-  background-color: #ccc;
-  -webkit-border-radius: 3px;
+  width: 275px;
+  -webkit-border-radius: 0px;
+     -moz-border-radius: 0px;
+          border-radius: 0px;
 }
-#messages #lines::-webkit-scrollbar-thumb:horizontal {
-  width: 50px;
-  background-color: #fff;
-  -webkit-border-radius: 3px;
+
+.main {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  bottom: 40px;
+  left: 0;
+  /* background-color: green; */
+  border-left: 3px solid #333333;
+  z-index: -1;
+  overflow: scroll;
 }
-#send-message {
-  background: #fff;
-  position: relative;
+
+.main .main-block{
+  padding-top: 135px;
+  padding-left: 20px;
+  padding-right: 288px;
 }
-#send-message input {
-  border: none;
-  height: 30px;
-  padding: 0 10px;
-  line-height: 30px;
-  vertical-align: middle;
-  width: 580px;
+
+.main .main-block .posts-container {
+  display: block;
+  width: 100%;
+  /* background-color: red; */
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
 }
-#send-message input:focus {
-  outline: 0;
+
+.messenger{
+  border: 3px solid #333333;
+  position: fixed;
+  height: 55px;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: #f0f0f0;
+  z-index: -1;
 }
-#send-message button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+
+.messenger .chat-sender{
+  padding-right: 281px;
 }
-button {
-  margin: 0;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-  display: inline-block;
-  text-decoration: none;
-  background: #43a1f7;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #43a1f7), color-stop(1, #377ad0));
-  background: -webkit-linear-gradient(top, #43a1f7 0%, #377ad0 100%);
-  background: -moz-linear-gradient(top, #43a1f7 0%, #377ad0 100%);
-  background: linear-gradient(top, #43a1f7 0%, #377ad0 100%);
-  border: 1px solid #2e70c4;
-  -webkit-border-radius: 16px;
-  -moz-border-radius: 16px;
-  border-radius: 16px;
-  color: #fff;
-  font-family: "lucida grande", sans-serif;
-  font-size: 11px;
-  font-weight: normal;
-  line-height: 1;
-  padding: 3px 10px 5px 10px;
-  text-align: center;
-  text-shadow: 0 -1px 1px #2d6dc0;
-}
-button:hover,
-button.hover {
-  background: darker;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #43a1f7), color-stop(1, #2e70c4));
-  background: -webkit-linear-gradient(top, #43a1f7 0%, #2e70c4 100%);
-  background: -moz-linear-gradient(top, #43a1f7 0%, #2e70c4 100%);
-  background: linear-gradient(top, #43a1f7 0%, #2e70c4 100%);
-  border: 1px solid #2e70c4;
-  cursor: pointer;
-  text-shadow: 0 -1px 1px #2c6bbb;
-}
-button:active,
-button.active {
-  background: #2e70c4;
-  border: 1px solid #2e70c4;
-  border-bottom: 1px solid #2861aa;
-  text-shadow: 0 -1px 1px #2b67b5;
-}
-button:focus,
-button.focus {
-  outline: none;
-  -webkit-box-shadow: 0 1px 0 0 rgba(255,255,255,0.4), 0 0 4px 0 #377ad0;
-  -moz-box-shadow: 0 1px 0 0 rgba(255,255,255,0.4), 0 0 4px 0 #377ad0;
-  box-shadow: 0 1px 0 0 rgba(255,255,255,0.4), 0 0 4px 0 #377ad0;
+
+.messenger .chat-sender input{
+  float: right;
+  height: 55px;
+  display: block;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding-left: 15px;
+  padding-right: 18px;
+  -webkit-border-radius: 0px;
+     -moz-border-radius: 0px;
+          border-radius: 0px;
 }
