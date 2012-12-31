@@ -28,7 +28,8 @@ function checkCookie()
   var username = getCookie("username");
   if (username != null && username != "")
   {
-    return username;
+    // return username;
+    return prompt("Please enter your name:", "");
   }
   else 
   {
@@ -36,7 +37,7 @@ function checkCookie()
     if (username != null && username != "")
     {
       // default 5 days
-      setCookie("username", username, 5);
+      setCookie("username", username, 1);
       return username;
     }
   }
@@ -45,17 +46,8 @@ function checkCookie()
 // Begin use of socket.io
 var socket = io.connect(window.location.hostname);
 
-socket.on('this', function (data) {
-  //$('.welcome').append(data);     no .welcome found
-  socket.emit('join room', !{ipaddress});
-  var name = checkCookie();
-  socket.emit('setname', name);
-  socket.emit('get all nearby');
-});
-
 socket.on('gotname', function (data){
   $('.yourname').append('Your name is: ' + data);
-  socket.clientName = name;
 });
 
 socket.on('allnearby', function (data){

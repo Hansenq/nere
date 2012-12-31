@@ -33,6 +33,16 @@ block content
       input#message
       button Send
 
+  script
+    socket.on('this', function (data) {
+      $('.welcome').append(data);
+      socket.emit('join room', !{ipaddress});
+      var name = checkCookie();
+      socket.clientName = name;
+      socket.emit('setname', name);
+      socket.emit('get all nearby');
+    });
+
 
 
 
