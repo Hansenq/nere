@@ -1,5 +1,3 @@
-
-
 // Functions to store, get, and check cookies of usernames
 function setCookie(c_name, value, exdays)
 {
@@ -29,7 +27,8 @@ function checkCookie()
   var username = getCookie("username");
   if (username != null && username != "")
   {
-    return username;
+    // return username;
+    return prompt("Please enter your name:", "");
   }
   else 
   {
@@ -37,7 +36,7 @@ function checkCookie()
     if (username != null && username != "")
     {
       // default 5 days
-      setCookie("username", username, 5);
+      setCookie("username", username, 1);
       return username;
     }
   }
@@ -56,7 +55,6 @@ socket.on('this', function (data) {
 
 socket.on('gotname', function (data){
   $('.yourname').append('Your name is: ' + data);
-  socket.clientName = name;
 });
 
 socket.on('allnearby', function (data){

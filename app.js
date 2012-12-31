@@ -60,7 +60,7 @@ io.sockets.on('connection', function (socket) {
   function getNearbyNames() {
     var nearby = io.sockets.clients(socket.ip);
     var nearbyNames = [];
-    for (var i=0; i<nearby.length; i++){
+    for (var i = 0; i < nearby.length; i++){
       nearbyNames[nearbyNames.length] = nearby[i].clientName;
     }
     return nearbyNames;
@@ -72,13 +72,20 @@ io.sockets.on('connection', function (socket) {
     socket.join(ipaddress); 
   });
   
+  // Returns false if name already exists in chat; true otherwise
   socket.on('setname', function (name) {
     var nearbyNames = getNearbyNames();
+    for (var x in nearbyNames) {
+      if (name === nearbyNames.x) {
+        
+      }
+    }
     socket.clientName = name;
     socket.emit('gotname', name);
     io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
     // sends connected in chat box
     socket.broadcast.to(socket.ip).emit('announcement', socket.clientName + ' connected.');
+    return true;
   });
 
   socket.on('get all nearby', function () {
@@ -115,13 +122,6 @@ io.sockets.on('connection', function (socket) {
     func(msg);
     socket.to(socket.ip).broadcast.emit('userMessage', socket.clientName, msg);
   });
-
-
-
-
-
-
-
 });
 
 var port = process.env.PORT || app.get('port');
