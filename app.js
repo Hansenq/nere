@@ -53,6 +53,8 @@ io.configure(function () {
 
 io.sockets.on('connection', function (socket) {
 
+  var address = socket.handshake.address;
+  console.log("New connection from " + address.address + ":" + address.port);
 
   // data not displaying, data kinda unnecessary
   socket.emit('this', 'Number of users looking at this site: ');
@@ -66,7 +68,8 @@ io.sockets.on('connection', function (socket) {
     return nearbyNames;
   };
   
-  socket.on('join room', function (ipaddress) {
+  socket.on('join room', function () {
+    ipaddress = address.address;
     console.log('Joining room ' + ipaddress);
     socket.ip = ipaddress;
     socket.join(ipaddress); 
@@ -75,17 +78,11 @@ io.sockets.on('connection', function (socket) {
   // Returns false if name already exists in chat; true otherwise
   socket.on('setname', function (name) {
     var nearbyNames = getNearbyNames();
-    for (var x in nearbyNames) {
-      if (name === nearbyNames.x) {
-        
-      }
-    }
     socket.clientName = name;
     socket.emit('gotname', name);
     io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
     // sends connected in chat box
     socket.broadcast.to(socket.ip).emit('announcement', socket.clientName + ' connected.');
-    return true;
   });
 
   socket.on('get all nearby', function () {

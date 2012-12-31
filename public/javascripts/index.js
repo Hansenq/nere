@@ -27,8 +27,7 @@ function checkCookie()
   var username = getCookie("username");
   if (username != null && username != "")
   {
-    // return username;
-    return prompt("Please enter your name:", "");
+    return username;
   }
   else 
   {
@@ -47,7 +46,7 @@ var socket = io.connect(window.location.hostname);
 
 socket.on('this', function (data) {
   //$('.welcome').append(data);     no .welcome found
-  socket.emit('join room', !{ipaddress});
+  socket.emit('join room');
   var name = checkCookie();
   socket.emit('setname', name);
   socket.emit('get all nearby');
@@ -60,9 +59,7 @@ socket.on('gotname', function (data){
 socket.on('allnearby', function (data){
   jQuery('.allusers').html('');
   for (var i=0; i<data.length; i++){
-    if (!(data[i] === socket.clientName)){
-      $('.allusers').append('<a onclick="sendFile(this.id, socket.clientName)" id="' + data[i] + '">Send file to ' + data[i] + '</a><br>');
-    }
+    $('.allusers').append('<a onclick="sendFile(this.id, socket.clientName)" id="' + data[i] + '">Send file to ' + data[i] + '</a><br>');
   }
 });
 
