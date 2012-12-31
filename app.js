@@ -49,10 +49,14 @@ app.get('/users', user.list);
 // Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 1); 
+  io.set("polling duration", 3); 
 });
 
 io.sockets.on('connection', function (socket) {
+
+
+  // data not displaying, data kinda unnecessary
+  socket.emit('this', 'Number of users looking at this site: ');
 
   function getNearbyNames() {
     var nearby = io.sockets.clients(socket.ip);
@@ -62,9 +66,6 @@ io.sockets.on('connection', function (socket) {
     }
     return nearbyNames;
   };
-
-  // data not displaying, kinda unnecessary
-  socket.emit('this', 'Number of users looking at this site: ');
   
   socket.on('join room', function (ipaddress) {
     console.log('Joining room ' + ipaddress);
@@ -74,29 +75,20 @@ io.sockets.on('connection', function (socket) {
   
   socket.on('setname', function (name) {
     var nearbyNames = getNearbyNames();
-    var numNames = 0;
-    for (var x in nearbyNames) {
-      if (name === nearbyNames[x])
-        numNames++;
-    }
-    if (numNames != 0) {
-      name = name + " (" + numNames + ")";
-    }
     socket.clientName = name;
     socket.emit('gotname', name);
     io.sockets.in(socket.ip).emit('allnearby', nearbyNames);
-
     // sends connected in chat box
     socket.broadcast.to(socket.ip).emit('announcement', socket.clientName + ' connected.');
   });
 
   socket.on('get all nearby', function () {
-    socket.to(socket.ip).emit('allnearby', getNearbyNames());
+    io.sockets.in(socket.ip).emit('allnearby', getNearbyNames());
   });
 
   socket.on('file sent', function (fileURL, receiverName, senderName) {
     var nearby = io.sockets.clients(socket.ip);
-    for (var i=0; i<nearby.length; i++){
+    for (var i = 0; i < nearby.length; i++){
       console.log(nearby[i].clientName);
       if (nearby[i].clientName === receiverName){
         nearby[i].emit('file received', fileURL, senderName);
