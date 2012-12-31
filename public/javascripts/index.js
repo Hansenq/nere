@@ -59,7 +59,7 @@ socket.on('Display client name', function (name){
 
 socket.on('Display new nearby name', function (name){
   // If this client is NOT the newly joined user, append the new name
-  if (name === socket.clientName)){
+  if (name === socket.clientName){
      $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
   }
 });
@@ -69,7 +69,7 @@ socket.on('Display all nearby names', function (allNearby){
   jQuery('.users').html('');
   // Display all users in lobby, except for client's own name
   for (var i=0; i<allNearby.length; i++){
-    if (!(allNearby[i] === socket.clientName)){
+    if (!allNearby[i] === socket.clientName){
       $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + allNearby[i] + '</strong></div>');
     }
   }
@@ -77,7 +77,7 @@ socket.on('Display all nearby names', function (allNearby){
 
 socket.on('Delete name', function (name){
   $('.user-block').each(function(){
-    if ($(this).html() === '<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>')){
+    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong>'){
       $(this).remove();
     }
   });
