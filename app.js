@@ -3,10 +3,6 @@
  */
 
 
-var express = require('express')  
-=======
-var express = require('express')
->>>>>>> master
   , app = express()
   , routes = require('./routes')
   , user = require('./routes/user')
