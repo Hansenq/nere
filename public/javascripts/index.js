@@ -50,7 +50,7 @@ function checkCookie()
 // Begin using socket.io
 var socket = io.connect(window.location.hostname);
 socket.emit('Set client name', prompt("Please enter your name:", ""));
-socket.emit('Get all nearby users');
+socket.emit('Get all lobby users');
 
 /*socket.on('this', function (data) {
   //$('.welcome').append(data);     no .welcome found
@@ -67,10 +67,10 @@ socket.on('Display new nearby name', function (name){
   $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
 });
 
-socket.on('Display all lobby names', function (allNearby){
+socket.on('Display all lobby names', function (lobbyNames){
   // Display all users in lobby, including client's own name
-  for (var i=0; i<allNearby.length; i++){
-    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + allNearby[i] + '</strong></div>');
+  for (var i=0; i<lobbyNames.length; i++){
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
   }
 });
 

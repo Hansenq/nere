@@ -51,13 +51,13 @@ io.configure(function () {
 
 io.sockets.on('connection', function (socket) {
 
-  function getNearbyNames() {
-    var nearby = io.sockets.clients(socket.ip);
-    var nearbyNames = [];
-    for (var i = 0; i < nearby.length; i++){
-      nearbyNames[nearbyNames.length] = nearby[i].clientName;
+  function getLobbyNames() {
+    var lobby = io.sockets.clients(socket.ip);
+    var lobbyNames = [];
+    for (var i = 0; i < lobby.length; i++){
+      lobbyNames[lobbyNames.length] = lobby[i].clientName;
     }
-    return nearbyNames;
+    return lobbyNames;
   };
   
   console.log('Joining room ' + socket.handshake.address.address);
@@ -67,13 +67,12 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('Set client name', function (name) {
     socket.clientName = name;
-    var nearbyNames = getNearbyNames();
     socket.emit('Display client name', name);
     socket.broadcast.to(socket.ip).emit('Display new nearby name', name);
   });
 
-  socket.on('Get all nearby users', function () {
-    io.sockets.in(socket.ip).emit('Display all lobby names', getNearbyNames());
+  socket.on('Get all lobby users', function () {
+    socket.emit('Display all lobby names', getLobbyNames());
   });
 
   /*
