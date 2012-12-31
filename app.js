@@ -3,7 +3,7 @@
  * Module dependencies.
  */
 
-// THIS COMMENT DELETED RAY AND HANSEN'S COMMENT! MUAHAHAHAHAHA
+// This comment is better than your comment!
 
 var express = require('express')  
   , app = express()
