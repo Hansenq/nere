@@ -1,11 +1,12 @@
-
 /**
  * Module dependencies.
  */
 
-// this should be in branch experiment testing commit -a and typing a message in vim!
 
 var express = require('express')  
+=======
+var express = require('express')
+>>>>>>> master
   , app = express()
   , routes = require('./routes')
   , user = require('./routes/user')
