@@ -68,11 +68,11 @@ io.sockets.on('connection', function (socket) {
     socket.clientName = name;
     var nearbyNames = getNearbyNames();
     socket.emit('Display client name', name);
-    io.sockets.in(socket.ip).emit('Display new nearby name', name);
+    socket.broadcast.to(socket.ip).emit('Display new nearby name', name);
   });
 
   socket.on('Get all nearby users', function () {
-    io.sockets.in(socket.ip).emit('Display all nearby names', getNearbyNames());
+    io.sockets.in(socket.ip).emit('Display all lobby names', getNearbyNames());
   });
 
   /*
