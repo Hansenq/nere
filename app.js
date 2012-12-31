@@ -2,8 +2,6 @@
  * Module dependencies.
  */
 
-// I like apples!
-
 var express = require('express')
   , app = express()
   , routes = require('./routes')
