@@ -1,11 +1,14 @@
-
 /**
  * Module dependencies.
  */
 
+<<<<<<< HEAD
 // We like trains! :) :) :) :) :( :())
+=======
+// We like trains!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+>>>>>>> 0277550325a744b358993ee80cf080861b422fb3
 
-var express = require('express')  
+var express = require('express')
   , app = express()
   , routes = require('./routes')
   , user = require('./routes/user')
