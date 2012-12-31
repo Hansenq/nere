@@ -8,7 +8,7 @@ exports.index = function(req, res){
   console.log('Client IP address: ' + ip);
 
   res.render('index', {
-    title: 'Express',
-    ipaddress: JSON.stringify(ip) 
+    title: 'nere',
+    ipaddress: JSON.stringify(ip)
   });
 };
