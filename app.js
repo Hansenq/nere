@@ -3,7 +3,7 @@
  * Module dependencies.
  */
 
-// This comment is the best!
+// We like trains!
 
 var express = require('express')  
   , app = express()
