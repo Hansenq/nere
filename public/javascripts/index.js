@@ -1,3 +1,5 @@
+/*
+
 // Functions to store, get, and check cookies of usernames
 function setCookie(c_name, value, exdays)
 {
@@ -42,29 +44,46 @@ function checkCookie()
   }
 }
 
+ var name = checkCookie();
+
+*/
+
 // Begin use of socket.io
 var socket = io.connect(window.location.hostname);
+socket.emit('Set client name', prompt("Please enter your name:", ""));
+socket.emit('Get all nearby users');
 
-socket.on('this', function (data) {
-  //$('.welcome').append(data);     no .welcome found
-  socket.emit('join room', !{ipaddress});
-  var name = checkCookie();
-  socket.emit('setname', name);
-  socket.emit('get all nearby');
+socket.on('Display client name', function (name){
+  $('.self-block input').val(name);
 });
 
-socket.on('gotname', function (data){
-  $('.yourname').append('Your name is: ' + data);
+socket.on('Display new nearby name', function (name){
+  // If this client is NOT the newly joined user, append the new name
+  if (name === socket.clientName)){
+     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
+  }
 });
 
-socket.on('allnearby', function (data){
-  jQuery('.allusers').html('');
-  for (var i=0; i<data.length; i++){
-    if (!(data[i] === socket.clientName)){
-      $('.allusers').append('<a onclick="sendFile(this.id, socket.clientName)" id="' + data[i] + '">Send file to ' + data[i] + '</a><br>');
+socket.on('Display all nearby names', function (allNearby){
+  // First empty existing list of users
+  jQuery('.users').html('');
+  // Display all users in lobby, except for client's own name
+  for (var i=0; i<allNearby.length; i++){
+    if (!(allNearby[i] === socket.clientName)){
+      $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + allNearby[i] + '</strong></div>');
     }
   }
 });
+
+socket.on('Delete name', function (name){
+  $('.user-block').each(function(){
+    if ($(this).html() === '<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>')){
+      $(this).remove();
+    }
+  });
+});
+
+/*
 
 socket.on('file received', function (data, senderName){
   $('.allfiles').append('<a href="' + data + '" target="_blank">New link from ' + senderName + '!</a><br>');
@@ -78,6 +97,9 @@ function sendFile(recId, sendId){
   });
 }
 
+*/
+
+/*
 
 // Below is code for the chat client!
 socket.on('joinChat', function() {
@@ -96,7 +118,6 @@ socket.on('allUsers', function(users) {
 
 socket.on('userMessage', message);
 
-
 // System Messages!
 socket.on('reconnected', function() {
   message('System', 'Reconnected to server.');
@@ -113,7 +134,6 @@ function message (from, msg) {
   $('#lines').append($('<p>').append($('<b>').text(from), msg));
   $('#lines').get(0).scrollTop = 1000000000;
 }
-
 
 // DOM manipulation
 $(function() {
@@ -132,6 +152,9 @@ $(function() {
   };
 });
 
+*/
+
+// DOM manipulation
 $(".user-block").hover(
   function(){
     $(this).css("background-color", "#f0f0f0");
