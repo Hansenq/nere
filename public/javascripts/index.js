@@ -75,21 +75,21 @@ socket.on('Delete name', function (name) {
   });
 });
 
-function sendNewFile (senderName) {
-  filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
-    socket.emit('Send new file', fpfile.url, fpfile.filename, senderName);
-  });
-}
-
 socket.on('Display new file', function (fileURL, filename, senderName) {
-  $('.posts-container').append('<strong>' + senderName + '&nbsp;&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a></strong><br>'); 
+  $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a><br>'); 
+});
+
+socket.on('Display new chat', function (chat, senderName){
+  $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
 });
 
 $(document).ready(function() {
   
   // Enable file sender button
   $('.file-sender').click(function(){
-    sendNewFile(socket.clientName);
+    filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
+      socket.emit('Send new file', fpfile.url, fpfile.filename, socket.clientName);
+    });
   });
 
   // Enable chat
@@ -99,7 +99,7 @@ $(document).ready(function() {
         socket.emit('Send new chat', $(this).val(), socket.clientName);
         $(this).val('');
     }
-});
+  });
 
 });
 
