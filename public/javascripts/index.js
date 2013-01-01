@@ -94,9 +94,11 @@ $(document).ready(function() {
 
   // Enable chat
   $(".messenger input").keypress(function(event) {
+    // Send chat when client presses enter (13)
     if (event.which == 13) {
         event.preventDefault();
         socket.emit('Send new chat', $(this).val(), socket.clientName);
+        // Clear client input
         $(this).val('');
     }
   });
