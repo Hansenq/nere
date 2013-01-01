@@ -41,7 +41,12 @@ function message(chat, senderName) {
 }
 
 // Begin using socket.io
-socket.clientName = prompt("Please enter your name:", "");
+var username = checkCookie('username');
+if (username === -1) {
+  username = (new Date()).getTime();
+}
+socket.clientName = username;
+username = null;
 socket.emit('Set client name', socket.clientName);
 socket.emit('Get all lobby users');
 
