@@ -64,6 +64,9 @@ io.sockets.on('connection', function (socket) {
   socket.ip = socket.handshake.address.address;
   socket.join(socket.ip);
 
+  console.log('IP using socket.handshake.address.address: ' + socket.handshake.address.address);
+  console.log('IP using socket.manager.handshaken[socket.id].address.address: ' + socket.manager.handshaken[socket.id].address.address);
+
   socket.on('Set client name', function (name) {
     socket.clientName = name;
     socket.emit('Display client name', name);
