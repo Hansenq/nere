@@ -73,8 +73,18 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.to(socket.ip).emit('Display new nearby name', name);
   });
 
+  socket.on('Change client name', function(newName, oldName) {
+    socket.clientName = newName;
+    socket.emit('Display client name', newName);
+    io.sockets.in(socket.ip).emit('Change nearby name', newName, oldName);
+  })
+
   socket.on('Get all lobby users', function () {
     socket.emit('Display all lobby names', getLobbyNames());
+  });
+
+  socket.on('Refresh all lobby users', function() {
+    socket.emit('Refresh all lobby names', getLobbyNames());
   });
 
   socket.on('Send new file', function (fileURL, filename, senderName) {
@@ -90,17 +100,6 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.to(socket.ip).emit('Delete name', socket.clientName);
     socket.leave(socket.ip);
   });
-
-  /*
-
-  // Below runs the chat client!
-  socket.on('userMessage', function(msg, func) {
-    func(msg);
-    socket.to(socket.ip).broadcast.emit('userMessage', socket.clientName, msg);
-  });
-
-  */
-
 });
 
 var port = process.env.PORT || app.get('port');

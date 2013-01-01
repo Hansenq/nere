@@ -1,5 +1,3 @@
-/*
-
 // Functions to store, get, and check cookies of usernames
 function setCookie(c_name, value, exdays)
 {
@@ -24,31 +22,25 @@ function getCookie(c_name)
   }
 }
 
-function checkCookie()
+function checkCookie(c_name)
 {
-  var username = getCookie("username");
+  var username = getCookie(c_name);
   if (username != null && username != "")
   {
     return username;
   }
   else 
   {
-    username = prompt("Please enter your name:", "");
-    if (username != null && username != "")
-    {
-      // default 5 days
-      setCookie("username", username, 1);
-      return username;
-    }
+    return -1;
   }
 }
 
- var name = checkCookie();
-
-*/
+function message(chat, senderName) {
+  $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
+  $('.posts-container').get(0).scrollTop = 1000000000;
+}
 
 // Begin using socket.io
-var socket = io.connect(window.location.hostname);
 socket.clientName = prompt("Please enter your name:", "");
 socket.emit('Set client name', socket.clientName);
 socket.emit('Get all lobby users');
@@ -67,6 +59,23 @@ socket.on('Display all lobby names', function (lobbyNames) {
   }
 });
 
+socket.on('Refresh all lobby names', function(lobbyNames) {
+  $('.user-block').each(function() {
+    $(this).remove();
+  });
+  for (var i=0; i<lobbyNames.length; i++){
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
+  }
+})
+
+socket.on('Change nearby name', function(newName, oldName) {
+  $('.user-block').each(function(){
+    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + oldName + '</strong>'){
+      $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + newName + '</strong>');
+    }
+  });
+});
+
 socket.on('Delete name', function (name) {
   $('.user-block').each(function(){
     if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong>'){
@@ -80,7 +89,23 @@ socket.on('Display new file', function (fileURL, filename, senderName) {
 });
 
 socket.on('Display new chat', function (chat, senderName){
-  $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
+  message(chat, senderName);
+});
+
+// System Messages for chat!
+socket.on('reconnected', function() {
+  message('Reconnected to server.', 'System');
+});
+socket.on('reconnecting', function() {
+  message('Reconnecting to server...', 'System');
+});
+socket.on('error', function(e) {
+  message(e ? e : 'An unknown error occurred.', 'System');
+});
+socket.on('announcement', function (msg) {
+  $('.posts-container').append($('<p>').append($('<em>').text(msg)));
+  $('.posts-container').get(0).scrollTop = 1000000000;
+
 });
 
 $(document).ready(function() {
@@ -93,16 +118,42 @@ $(document).ready(function() {
   });
 
   // Enable chat
-  $(".messenger input").keypress(function(event) {
+  $('.messenger .chat-sender input').keypress(function(event) {
     // Send chat when client presses enter (13)
     if (event.which == 13) {
         event.preventDefault();
         socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
-        $(this).val('');
+        $(this).val('').focus();
     }
   });
 
+  // Enable save to cookies for 1 day
+  $('.sidebar .self-block input').keypress(function(event) {
+    // Saves name to cookies when client presses enter (13)
+    if (event.which == 13) {
+      event.preventDefault();
+      var newName = $(this).val();
+      $(this).blur();
+      var oldName = socket.clientName;
+      var un = checkCookie();
+      if (newName === '' || newName === null || newName === un){
+        console.log('New name is empty or null or unchanged!');
+        return;
+      }
+      if (un != -1) {
+        // Non-blank cookie
+        setCookie('username', '', -1);
+      }
+      setCookie('username', newName, 1);
+      socket.emit('Change client name', newName, oldName);
+      socket.clientName = newName;
+      alert('Saved username.');
+    }
+  });
+
+  // Default focus to .messenger input
+  $('.messenger .chat-sender input').focus();
 });
 
 /*

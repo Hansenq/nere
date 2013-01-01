@@ -1,13 +1,6 @@
 extends layout
 
 block content
-  script(type='text/javascript')
-    if (socket === null) {
-      var socket = io.connect(window.location.hostname);
-      console.log("Socket not defined in index.jade!");
-      }
-    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)});
-    console.log('Can we print this?' + !{JSON.stringify(ipaddress)});
   // Navbar
   .navbar.navbar-fixed-top
     .navbar-inner
@@ -69,3 +62,9 @@ block content
   .messenger
     .chat-sender
       input(type='text', placeholder='What is on your mind?')
+
+// Init JS
+block footerJs
+  script
+    var socket = io.connect(window.location.hostname);
+    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)});
