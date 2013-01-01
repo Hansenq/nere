@@ -10,7 +10,7 @@ exports.index = function(req, res){
 
   res.render('index', {
     title: 'nere',
-    parsedip: ip
+    ipaddress: ip
   });
   
 };

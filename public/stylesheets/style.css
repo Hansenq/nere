@@ -28,8 +28,9 @@
   padding-top: 75px;
   border-left: 3px solid #333333;
   z-index: 0;
-  background-image:url("/subtlepatterns/gray_jean/gray_jean.png");
-  background-repeat:repeat;
+  background-color: #eeeeee;
+  background-image: url("/subtlepatterns/gray_jean/gray_jean.png");
+  background-repeat: repeat;
 }
 
 .sidebar .self-block {

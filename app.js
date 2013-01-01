@@ -74,19 +74,13 @@ io.sockets.on('connection', function (socket) {
     socket.emit('Display all lobby names', getLobbyNames());
   });
 
-  /*
-
-  socket.on('file sent', function (fileURL, receiverName, senderName) {
-    var nearby = io.sockets.clients(socket.ip);
-    for (var i = 0; i < nearby.length; i++){
-      console.log(nearby[i].clientName);
-      if (nearby[i].clientName === receiverName){
-        nearby[i].emit('file received', fileURL, senderName);
-      }
-    }
+  socket.on('Send new file', function (fileURL, filename, senderName) {
+    io.sockets.in(socket.ip).emit('Display new file', fileURL, filename, senderName);
   });
 
-  */
+  socket.on('Send new chat', function (chat, senderName) {
+    
+  });
 
   socket.on('disconnect', function () {
     console.log('Leaving room ' + socket.ip);

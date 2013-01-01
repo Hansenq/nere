@@ -1,6 +1,8 @@
 extends layout
 
 block content
+  
+  // Navbar
   .navbar.navbar-fixed-top
     .navbar-inner
       .container
@@ -9,12 +11,36 @@ block content
           li.active
             a(href='#') Workspace
           li
-            a(href='#') About
+            a(href='#aboutModal', data-toggle='modal') About
           li
-            a(href='#') Contact Us
+            a(href='#contactModal', data-toggle='modal') Contact Us
+
+  // "About" Modal
+  #aboutModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#myModalLabel About
+      .modal-body
+        p One fine body…
+      .modal-footer
+        button.btn(data-dismiss='modal', aria-hidden='true') Close
+
+  // "Contact Us" Modal
+  #contactModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+    .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#myModalLabel Contact Us
+      .modal-body
+        p One fine body…
+      .modal-footer
+        button.btn(data-dismiss='modal', aria-hidden='true') Close
+
+  // Infobar
   .infobar
     strong Stanford, California
-    strong(style='float: right;') Lobby #{parsedip}
+    strong(style='float: right;') Lobby #{ipaddress}
+
+  // Sidebar (client name, file sender, nearby users list)
   .sidebar
     .self-block
       strong You:
@@ -27,9 +53,13 @@ block content
       &nbsp;
       i.icon-globe
     .users
+
+  // Posts and file uploads
   .main
     .main-block
       .posts-container
+
+  // Messenger
   .messenger
     .chat-sender
       input(type='text', placeholder='What is on your mind?')

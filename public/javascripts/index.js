@@ -49,25 +49,25 @@ function checkCookie()
 
 // Begin using socket.io
 var socket = io.connect(window.location.hostname);
-socket.emit('Set client name', prompt("Please enter your name:", ""));
+socket.clientName = prompt("Please enter your name:", "");
+socket.emit('Set client name', socket.clientName);
 socket.emit('Get all lobby users');
 
-socket.on('Display client name', function (name){
+socket.on('Display client name', function (name) {
   $('.self-block input').val(name);
 });
 
-socket.on('Display new nearby name', function (name){
+socket.on('Display new nearby name', function (name) {
   $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
 });
 
-socket.on('Display all lobby names', function (lobbyNames){
-  // Display all users in lobby, including client's own name
+socket.on('Display all lobby names', function (lobbyNames) {
   for (var i=0; i<lobbyNames.length; i++){
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
   }
 });
 
-socket.on('Delete name', function (name){
+socket.on('Delete name', function (name) {
   $('.user-block').each(function(){
     if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong>'){
       $(this).remove();
@@ -75,21 +75,33 @@ socket.on('Delete name', function (name){
   });
 });
 
-/*
-
-socket.on('file received', function (data, senderName){
-  $('.allfiles').append('<a href="' + data + '" target="_blank">New link from ' + senderName + '!</a><br>');
-  message('System', senderName + ' has send you a <a href="' + data + '" target="_blank">file</a>!<br>');
-});
-
-
-function sendFile(recId, sendId){
+function sendNewFile (senderName) {
   filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
-    socket.emit('file sent', fpfile.url, recId, sendId);
+    socket.emit('Send new file', fpfile.url, fpfile.filename, senderName);
   });
 }
 
-*/
+socket.on('Display new file', function (fileURL, filename, senderName) {
+  $('.posts-container').append('<strong>' + senderName + '&nbsp;&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a></strong><br>'); 
+});
+
+$(document).ready(function() {
+  
+  // Enable file sender button
+  $('.file-sender').click(function(){
+    sendNewFile(socket.clientName);
+  });
+
+  // Enable chat
+  $(".messenger input").keypress(function(event) {
+    if (event.which == 13) {
+        event.preventDefault();
+        socket.emit('Send new chat', $(this).val(), socket.clientName);
+        $(this).val('');
+    }
+});
+
+});
 
 /*
 
@@ -146,12 +158,16 @@ $(function() {
 
 */
 
-// Making things pretty
-$(".user-block").hover(
-  function(){
-    $(this).css("background-color", "#f0f0f0");
-  },
-  function(){
-    $(this).css("background-color", "#ffffff");
-  }
-);
+/*
+  
+  // Enable user-block color change on hover over
+  $(".user-block").hover(
+    function(){
+      $(this).css("background-color", "#f0f0f0");
+    },
+    function(){
+      $(this).css("background-color", "#ffffff");
+    }
+  );
+
+*/
