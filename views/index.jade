@@ -1,7 +1,8 @@
 extends layout
 
 block content
-  
+  script(type='text.javascript')
+    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)};
   // Navbar
   .navbar.navbar-fixed-top
     .navbar-inner

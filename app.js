@@ -60,12 +60,12 @@ io.sockets.on('connection', function (socket) {
     return lobbyNames;
   };
   
-  console.log('Joining room ' + socket.handshake.address.address);
-  socket.ip = socket.handshake.address.address;
-  socket.join(socket.ip);
+  socket.on('Initialize IP', function(ip) {
+    console.log('Joining room ' + ip);
+    socket.ip = ip;
+    socket.join(socket.ip);
+  })
 
-  console.log('IP using socket.handshake.address.address: ' + socket.handshake.address.address);
-  console.log('IP using socket.manager.handshaken[socket.id].address.address: ' + socket.manager.handshaken[socket.id].address.address);
 
   socket.on('Set client name', function (name) {
     socket.clientName = name;
