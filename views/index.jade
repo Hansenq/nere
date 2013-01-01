@@ -1,12 +1,12 @@
 extends layout
 
 block content
-  script(type='text.javascript')
+  script(type='text/javascript')
     if (socket === null) {
       var socket = io.connect(window.location.hostname);
       console.log("Socket not defined in index.jade!");
       }
-    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)};
+    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)});
     console.log(!{JSON.stringify(ipaddress)});
   // Navbar
   .navbar.navbar-fixed-top
