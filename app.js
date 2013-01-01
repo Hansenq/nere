@@ -62,6 +62,7 @@ io.sockets.on('connection', function (socket) {
   
   console.log('Joining room ' + socket.handshake.address.address);
   socket.ip = socket.handshake.address.address;
+  console.log("===================" + socket.handshake.address.address + "===================");
   socket.join(socket.ip);
 
   socket.on('Set client name', function (name) {
