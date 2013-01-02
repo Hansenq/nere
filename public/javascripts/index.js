@@ -35,9 +35,15 @@ function checkCookie(c_name)
   }
 }
 
-function message(chat, senderName) {
+function message (chat, senderName) {
   $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
   $('.posts-container').get(0).scrollTop = 1000000000;
+}
+
+function changeRooms(roomId) {
+  socket.emit('Change rooms', roomId);
+  message('Leaving room...', 'System');
+  socket.roomId = roomId;
 }
 
 // Begin using socket.io
@@ -46,7 +52,9 @@ if (username === -1) {
   username = (new Date()).getTime();
 }
 socket.clientName = username;
+socket.roomId = ipAddress;
 username = null;
+var rooms = {ipAddress};
 socket.emit('Set client name', socket.clientName);
 socket.emit('Get all lobby users');
 
@@ -62,6 +70,7 @@ socket.on('Display all lobby names', function (lobbyNames) {
   for (var i=0; i<lobbyNames.length; i++){
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
   }
+  message('Joined room!', 'System');
 });
 
 socket.on('Refresh all lobby names', function(lobbyNames) {
@@ -114,7 +123,7 @@ socket.on('announcement', function (msg) {
 });
 
 $(document).ready(function() {
-  
+
   // Enable file sender button
   $('.file-sender').click(function(){
     filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
@@ -126,12 +135,12 @@ $(document).ready(function() {
   $('.messenger .chat-sender input').keypress(function(event) {
     // Send chat when client presses enter (13)
     if (event.which == 13) {
-        event.preventDefault();
-        socket.emit('Send new chat', $(this).val(), socket.clientName);
+      event.preventDefault();
+      socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
         $(this).val('').focus();
-    }
-  });
+      }
+    });
 
   // Enable save to cookies for 1 day
   $('.sidebar .self-block input').keypress(function(event) {
@@ -160,61 +169,6 @@ $(document).ready(function() {
   // Default focus to .messenger input
   $('.messenger .chat-sender input').focus();
 });
-
-/*
-
-// Below is code for the chat client!
-socket.on('joinChat', function() {
-  $('#chatClient').addClass('connected');
-})
-
-socket.on('announcement', function (msg) {
-  $('#lines').append($('<p>').append($('<em>').text(msg)));
-});
-
-socket.on('allUsers', function(users) {
-  $('#users').empty().append($('<span>Online: </span>'));
-  for (var i in nicknames) 
-    $('#users').append($('<b>').text(nicknames[i]));
-});
-
-socket.on('userMessage', message);
-
-// System Messages!
-socket.on('reconnected', function() {
-  message('System', 'Reconnected to server.');
-});
-socket.on('reconnecting', function() {
-  message('System', 'Reconnecting to server...');
-});
-socket.on('error', function(e) {
-  message('System', e ? e : 'An unknown error occurred.');
-});
-
-
-function message (from, msg) {
-  $('#lines').append($('<p>').append($('<b>').text(from), msg));
-  $('#lines').get(0).scrollTop = 1000000000;
-}
-
-// DOM manipulation
-$(function() {
-  $('#send-message').submit(function() {
-    //message('me', $('message').val());
-    socket.emit('userMessage', $('#message').val(), function(msg) {
-      message('me', msg);
-    });
-    clear();
-    $('#lines').get(0).scrollTop = 1000000000;
-    return false;
-  });
-
-  function clear() {
-    $('#message').val('').focus();
-  };
-});
-
-*/
 
 /*
   

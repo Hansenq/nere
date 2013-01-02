@@ -67,4 +67,5 @@ block content
 block footerJs
   script
     var socket = io.connect(window.location.hostname);
-    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)});
+    var ipAddress = !{JSON.stringify(ipaddress)}
+    socket.emit('Join room with ip', ipAddress);
