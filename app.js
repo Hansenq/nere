@@ -42,7 +42,6 @@ io.configure(function() {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
-
 // Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
@@ -59,9 +58,9 @@ io.sockets.on('connection', function (socket) {
     }
     return lobbyNames;
   };
-  
-  console.log('Joining room ' + socket.handshake.address.address);
-  socket.ip = socket.handshake.address.address;
+
+  socket.ip = socket.handshake.address.address
+  console.log('Joining room ' + socket.ip);
   socket.join(socket.ip);
 
   socket.on('Set client name', function (name) {

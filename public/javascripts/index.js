@@ -84,7 +84,7 @@ socket.on('Display new chat', function (chat, senderName){
 });
 
 $(document).ready(function() {
-  
+
   // Enable file sender button
   $('.file-sender').click(function(){
     filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
