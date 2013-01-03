@@ -40,7 +40,7 @@ function message(chat, senderName) {
   $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
   
   // Lock scrollbar to bottom on send.
-  $('.main').scrollTop(100000000000000000);
+  $('.main').scrollTop($('.main').prop('scrollHeight'));
 
 }
 
@@ -98,7 +98,7 @@ socket.on('Display new file', function (fileURL, filename, senderName) {
   $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a><br>'); 
 
   // Lock scrollbar to bottom on send.
-  $('.main').scrollTop(100000000000000000);
+  $('.main').scrollTop($('.main').prop('scrollHeight'));
 
 });
 
@@ -133,8 +133,8 @@ $(document).ready(function() {
 
   // Enable chat
   $('.messenger .chat-sender input').keypress(function(event) {
-    // Send chat when client presses enter (13)
-    if (event.which == 13) {
+    // Send chat when client presses enter (13), and only if input is not empty
+    if (event.which == 13 && $(this).val() !== "") {
         event.preventDefault();
         socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
