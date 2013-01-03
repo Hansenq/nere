@@ -1,7 +1,6 @@
 extends layout
 
 block content
-  
   // Navbar
   .navbar.navbar-fixed-top
     .navbar-inner
@@ -62,3 +61,9 @@ block content
   .messenger
     .chat-sender
       input(type='text', placeholder='What is on your mind?')
+
+// Init JS
+block footerJs
+  script
+    var socket = io.connect(window.location.hostname);
+    socket.emit('Initialize IP', !{JSON.stringify(ipaddress)});

@@ -97,9 +97,49 @@
 .main .main-block .posts-container {
   display: block;
   width: 100%;
+  height: 100%;
+  /*overflow-x: hidden;*/
+  overflow-y: auto;
+  white-space: pre-wrap;      /* CSS3 */   
+  white-space: -moz-pre-wrap; /* Firefox */    
+  white-space: -pre-wrap;     /* Opera <7 */   
+  white-space: -o-pre-wrap;   /* Opera 7 */    
+  word-wrap: break-word;      /* IE */
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+}
+
+.main .main-block .posts-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.main .main-block .posts-container::-webkit-scrollbar-button:start:decrement,
+.main .main-block .posts-container::-webkit-scrollbar-button:end:increment {
+  display: block;
+  height: 10px;
+}
+
+.main .main-block .posts-container::-webkit-scrollbar-button:vertical:increment {
+  background-color: #fff;
+}
+
+.main .main-block .posts-container::-webkit-scrollbar-track-piece {
+  background-color: #fff;
+  -webkit-border-radius: 3px;
+}
+
+.main .main-block .posts-container::-webkit-scrollbar-thumb:vertical {
+  height: 50px;
+  background-color: #ccc;
+  -webkit-border-radius: 3px;
+}
+
+.main .main-block .posts-container::-webkit-scrollbar-thumb:horizontal {
+  width: 50px;
+  background-color: #fff;
+  -webkit-border-radius: 3px;
 }
 
 .messenger{
