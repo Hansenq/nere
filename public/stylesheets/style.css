@@ -81,21 +81,20 @@
   position: fixed;
   height: 100%;
   width: 100%;
-  bottom: 40px;
   left: 0;
-  border-left: 3px solid #333333;
   z-index: -1;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .main .main-block{
-  padding-top: 135px;
+  padding-top: 95px;
   padding-left: 20px;
-  padding-right: 288px;
+  padding-right: 298px;
 }
 
 .main .main-block .posts-container {
   display: block;
+  padding-bottom: 81px;
   width: 100%;
   height: 100%;
   /*overflow-x: hidden;*/
@@ -154,7 +153,7 @@
 }
 
 .messenger .chat-sender{
-  padding-right: 281px;
+  padding-right: 279px;
 }
 
 .messenger .chat-sender input{

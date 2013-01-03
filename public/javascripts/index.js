@@ -159,6 +159,10 @@ $(document).ready(function() {
 
   // Default focus to .messenger input
   $('.messenger .chat-sender input').focus();
+
+  // Keep chat box scrolled to bottom
+  // $('.main').scrollTop = $('.main').scrollHeight;
+
 });
 
 /*
