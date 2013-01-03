@@ -36,8 +36,12 @@ function checkCookie(c_name)
 }
 
 function message(chat, senderName) {
+
   $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
-  $('.posts-container').get(0).scrollTop = 1000000000;
+  
+  // Lock scrollbar to bottom on send.
+  $('.main').scrollTop(100000000000000000);
+
 }
 
 // Begin using socket.io
@@ -90,7 +94,12 @@ socket.on('Delete name', function (name) {
 });
 
 socket.on('Display new file', function (fileURL, filename, senderName) {
+  
   $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a><br>'); 
+
+  // Lock scrollbar to bottom on send.
+  $('.main').scrollTop(100000000000000000);
+
 });
 
 socket.on('Display new chat', function (chat, senderName){
@@ -159,9 +168,6 @@ $(document).ready(function() {
 
   // Default focus to .messenger input
   $('.messenger .chat-sender input').focus();
-
-  // Keep chat box scrolled to bottom
-  // $('.main').scrollTop = $('.main').scrollHeight;
 
 });
 
