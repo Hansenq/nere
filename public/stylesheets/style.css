@@ -41,7 +41,7 @@
 
 .self-block input{
   margin: 0;
-  width: 150px;
+  width: 180px;
 }
 
 .sidebar .title-block {
@@ -84,7 +84,7 @@
   left: 0;
   z-index: -1;
 
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .main .main-block{
@@ -104,7 +104,7 @@
 
 /* 
   @Hansen: For some reason, only the main class's overflow seems to be working. 
-           I fixed the scrollbar with that in mind. It works now (as well as auto-scroll).
+  I fixed the scrollbar with that in mind. It works now (as well as auto-scroll).
 */
 
   /*overflow-x: hidden;*/

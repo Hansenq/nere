@@ -85,8 +85,8 @@ io.sockets.on('connection', function (socket) {
     socket.emit('Refresh all lobby names', getLobbyNames());
   });
 
-  socket.on('Send new file', function (fileURL, filename, senderName) {
-    io.sockets.in(socket.ip).emit('Display new file', fileURL, filename, senderName);
+  socket.on('Send new file', function (fpfile, senderName) {
+    io.sockets.in(socket.ip).emit('Display new file', fpfile, senderName);
   });
 
   socket.on('Send new chat', function (chat, senderName) {

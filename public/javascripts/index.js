@@ -93,9 +93,29 @@ socket.on('Delete name', function (name) {
   });
 });
 
-socket.on('Display new file', function (fileURL, filename, senderName) {
+socket.on('Display new file', function (fpfile, senderName) {
   
-  $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a><br>'); 
+  $('.posts-container').append(
+    '<strong>System:</strong>&nbsp;&nbsp;' +
+    'New file shared by <strong>' + senderName + '</strong>.' + 
+    '<br><br>' +
+    '<table class="table table-bordered">' +
+      '<tbody>' +
+        '<tr>' +
+          '<td><strong>From</strong></th>' +
+          '<td><strong>Filename</strong></th>' +
+          '<td><strong>Filepicker URL</strong></th>' +
+          '<td><strong>File Download</strong></th>' +
+        '</tr>' +
+        '<tr>' +
+          '<td>' + senderName + '</td>' +
+          '<td>' + fpfile.filename + '</td>' +
+          '<td>' + fpfile.url + '</td>' +
+          '<td><a class="btn btn-primary btn-block" href="' + fpfile.url + '">Download</a></th>' +
+        '</tr>' +
+      '</tbody>' +
+    '</table>'
+  ); 
 
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
@@ -118,8 +138,7 @@ socket.on('error', function(e) {
 });
 socket.on('announcement', function (msg) {
   $('.posts-container').append($('<p>').append($('<em>').text(msg)));
-  $('.posts-container').get(0).scrollTop = 1000000000;
-
+  $('.main').scrollTop($('.main').prop('scrollHeight'));
 });
 
 $(document).ready(function() {
@@ -127,7 +146,7 @@ $(document).ready(function() {
   // Enable file sender button
   $('.file-sender').click(function(){
     filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
-      socket.emit('Send new file', fpfile.url, fpfile.filename, socket.clientName);
+      socket.emit('Send new file', fpfile, socket.clientName);
     });
   });
 
