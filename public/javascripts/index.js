@@ -102,9 +102,9 @@ socket.on('Display new file', function (fpfile, senderName) {
     '<table class="table table-bordered">' +
       '<tbody>' +
         '<tr>' +
-          '<td><strong>From</strong></th>' +
+          '<td><strong>Sender</strong></th>' +
           '<td><strong>Filename</strong></th>' +
-          '<td><strong>Filepicker URL</strong></th>' +
+          '<td><strong>Sharable Filepicker URL</strong></th>' +
           '<td><strong>File Download</strong></th>' +
         '</tr>' +
         '<tr>' +
