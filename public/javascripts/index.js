@@ -37,7 +37,7 @@ function checkCookie(c_name)
 
 function message(chat, senderName) {
 
-  $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;' + chat + '<br>'); 
+  $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;' + chat + '<br>'); 
   
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
@@ -95,7 +95,7 @@ socket.on('Delete name', function (name) {
 
 socket.on('Display new file', function (fileURL, filename, senderName) {
   
-  $('.posts-container').append('<strong>' + senderName + '</strong>&nbsp;&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a><br>'); 
+  $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;<a href=' + fileURL + '>' + filename + '</a><br>'); 
 
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));

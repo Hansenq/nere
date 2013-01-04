@@ -15,30 +15,31 @@ block content
             a(href='#contactModal', data-toggle='modal') Contact Us
 
   // "About" Modal
-  #aboutModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+  #aboutModal.modal.hide.fade(tabindex='-1', role='dialog')
     .modal-header
-        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-        h3#myModalLabel About
+        button.close(type='button', data-dismiss='modal') ×
+        h3 About
       .modal-body
-        p One fine body…
+        p Nere is an experimenta
       .modal-footer
-        button.btn(data-dismiss='modal', aria-hidden='true') Close
+        button.btn(data-dismiss='modal') Close
 
   // "Contact Us" Modal
-  #contactModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+  #contactModal.modal.hide.fade(tabindex='-1', role='dialog')
     .modal-header
-        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
-        h3#myModalLabel Contact Us
+        button.close(type='button', data-dismiss='modal') ×
+        h3 Contact Us
       .modal-body
-        p One fine body…
+        p Questions or comments? Found a bug? We'd love to hear from you.
+        p Shoot us an email at rzhou186@stanford.edu. We'll get back to you ASAP!
       .modal-footer
-        button.btn(data-dismiss='modal', aria-hidden='true') Close
+        button.btn(data-dismiss='modal') Close
 
   // Infobar
   .infobar
     strong(style='float: right;') Lobby #{ipaddress}
 
-  // Sidebar (client name, file sender, & list of nearby users)
+  // Sidebar (client name, file sender, & nearby users)
   .sidebar
     .self-block
       strong You:

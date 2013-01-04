@@ -104,7 +104,7 @@
 
 /* 
   @Hansen: For some reason, only the main class's overflow seems to be working. 
-           I fixed the scrollbar with that in mind. It works now (as well as the auto-scroll).
+           I fixed the scrollbar with that in mind. It works now (as well as auto-scroll).
 */
 
   /*overflow-x: hidden;*/
@@ -160,11 +160,10 @@
 }
 
 .messenger .chat-sender{
-  padding-right: 279px;
+  padding-right: 281px;
 }
 
 .messenger .chat-sender input{
-  float: right;
   height: 55px;
   display: block;
   width: 100%;
