@@ -68,7 +68,7 @@ socket.on('Display all lobby names', function (lobbyNames) {
   }
 });
 
-socket.on('Refresh all lobby names', function(lobbyNames) {
+socket.on('Refresh all lobby names', function (lobbyNames) {
   $('.user-block').each(function() {
     $(this).remove();
   });
