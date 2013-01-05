@@ -178,7 +178,7 @@ $(document).ready(function() {
       setCookie('username', newName, 1);
       socket.emit('Change client name', newName, oldName, socket.clientID);
       socket.clientName = newName;
-      alert('Saved username.);
+      alert('Saved username.');
     }
   });
 
