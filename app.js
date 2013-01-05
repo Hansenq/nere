@@ -34,9 +34,9 @@
 });
 
 // gives X amount of time to reopen connection
-io.configure(function() {
+/*io.configure(function() {
   io.set('close timeout', 5);
-});
+});*/
 
 // App Routes
 app.get('/', routes.index);
@@ -46,7 +46,7 @@ app.get('/users', user.list);
 // Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 3); 
+  io.set("polling duration", 10); 
 });
 
 // 
@@ -85,7 +85,7 @@ Room.prototype.addSocket = function (socket) {
       hasSpace = true;
     }
   }
-  if (ip === false) {
+  if (hasSpace === false) {
     this.sockets[this.sockets.length] = socket;
   }
   return this;
@@ -96,17 +96,18 @@ Room.prototype.removeSocket = function(socket) {
   reCalcCenter(-1, socket.latitude, socket.longitude);
   this.numUsers--;
   var empty = true;
-  for (var i = 0; i < this.ips.length; i++) {
-    if (this.ips[i] === uIP) {
-      this.ips[i] = null;
+  for (var i = 0; i < this.sockets.length; i++) {
+    if (this.sockets[i] === uIP) {
+      this.sockets[i] = null;
     }
-    if (empty === false && this.ips[i] != null) {
+    if (empty === false && this.sockets[i] != null) {
       empty = false;
     }
   }
   if (empty === true) {
     removeRoom(this.id);
   }
+}
 
 // Might as well convert this to a binary search tree sometime..
 function addRoom(roomName) {
@@ -171,34 +172,38 @@ function getRoomFromId(roomId) {
       nullVal = i;
     }
   }
+  var room = new Room(roomId);
   if (nullVal === -1) {
-    rooms[nullVal] = new Room(roomName);
+    rooms[nullVal] = room;
   } else {
-    rooms[rooms.length] = new Room(roomName);
+    rooms[rooms.length] = room;
   }
+  return room;
 }
 
-// Socket managerial functions
-function changeRooms(newRoom) {
-  io.sockets.in(socket.roomId).emit('Delete name', socket.clientName);
-  socket.room.removeSocket(this);
-  socket.leave(socket.roomId);
-  socket.roomId = newRoom.id;
-  socket.join(socket.roomId);
-  socket.room = newRoom;
-  newRoom.addSocket(this);
-  socket.emit('Change room', newRoom.id);
-  socket.emit('Refresh all lobby names', getLobbyNames());
-  sockets.broadcast.to(socket.roomId).emit('Display new nearby name', socket.name);
-}
+
 
 
 
 
 io.sockets.on('connection', function (socket) {
+  // Socket managerial functions
+  function changeRooms(newRoom) {
+    io.sockets.in(socket.roomId).emit('Delete name', socket.clientName);
+    socket.room.removeSocket(this);
+    socket.leave(socket.roomId);
+    socket.roomId = newRoom.id;
+    socket.join(socket.roomId);
+    socket.room = newRoom;
+    newRoom.addSocket(this);
+    socket.emit('Change room', newRoom.id);
+    socket.emit('Refresh all lobby names', getLobbyNames());
+    socket.broadcast.to(socket.roomId).emit('Display new nearby name', socket.name);
+  }
+
   function getLobbyNames() {
     // Returns array of socket variables
-    var lobby = io.sockets.clients(socket.ip);
+    var lobby = io.sockets.clients(socket.roomId);
     var lobbyNames = [];
     for (var i = 0; i < lobby.length; i++){
       lobbyNames[lobbyNames.length] = lobby[i].clientName;
@@ -220,13 +225,13 @@ io.sockets.on('connection', function (socket) {
   socket.on('Set client name', function (name) {
     socket.clientName = name;
     socket.emit('Display client name', name);
-    socket.broadcast.to(socket.ip).emit('Display new nearby name', name);
+    socket.broadcast.to(socket.roomId).emit('Display new nearby name', name);
   });
 
   socket.on('Change client name', function(newName, oldName) {
     socket.clientName = newName;
     socket.emit('Display client name', newName);
-    io.sockets.in(socket.ip).emit('Change nearby name', newName, oldName);
+    io.sockets.in(socket.roomId).emit('Change nearby name', newName, oldName);
   });
 
   socket.on('Change rooms', function(newRoomId) {
@@ -244,31 +249,32 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Send new file', function (fileURL, filename, senderName) {
-    io.sockets.in(socket.ip).emit('Display new file', fileURL, filename, senderName);
+    io.sockets.in(socket.roomId).emit('Display new file', fileURL, filename, senderName);
   });
 
   socket.on('Send new chat', function (chat, senderName) {
-    io.sockets.in(socket.ip).emit('Display new chat', chat, senderName);
+    io.sockets.in(socket.roomId).emit('Display new chat', chat, senderName);
   });
 
   socket.on('Send loc info', function(latitude, longitude) {
     socket.latitude = latitude;
     socket.longitude = longitude;
-    var room = rooms[findNearestRoomLoc(latitude, longitude)].addSocket(socket);
+    var room = findNearestRoomLoc(latitude, longitude).addSocket(socket);
     if (room.id != socket.roomId) {
       changeRooms(room);
     }
   });
 
-  socket.on('Use ip info', function() {
+  socket.on('Use roomId info', function() {
     // No change (yet!)
   });
 
   socket.on('disconnect', function () {
-    console.log('Leaving room ' + socket.ip);
-    socket.broadcast.to(socket.ip).emit('Delete name', socket.clientName);
-    socket.leave(socket.ip);
-    checkRoomEmpty(socket.ip);
+    console.log('Leaving room ' + socket.roomId);
+    socket.broadcast.to(socket.roomId).emit('Delete name', socket.clientName);
+    socket.room.removeSocket(this);
+    socket.room = null;
+    socket.leave(socket.roomId);
   });
 });
 

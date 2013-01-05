@@ -69,7 +69,6 @@ socket.on('Display all lobby names', function (lobbyNames) {
   for (var i=0; i<lobbyNames.length; i++){
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
   }
-  message('Joined room!', 'System');
 });
 
 socket.on('Refresh all lobby names', function(lobbyNames) {
@@ -99,7 +98,7 @@ socket.on('Delete name', function (name) {
 
 socket.on('Change room', function(id) {
   socket.roomId = id;
-  $('.posts-container').clear();
+  $('.posts-container').empty();
   message('Your room has been changed!', 'System');
 });
 

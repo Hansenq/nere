@@ -1,7 +1,7 @@
 
-var socket.posLatitude = -1, 
-    socket.posLongitude = -1, 
-    socket.posAccuracy = -1;
+socket.posLatitude = -1;
+socket.posLongitude = -1;
+socket.posAccuracy = -1;
 var desiredLocAccuracy = 50, // meters
     positionTimeout = 10000, // time it takes 
     geohashDigitAccuracy = 8;   // 6 = 610m, 7 = 76m, 8 = 19m
@@ -41,7 +41,7 @@ if (navigator.geolocation) {
     positionSuccess, 
     positionError,
     {
-      enableHighAccuracy: true;
+      enableHighAccuracy: true
     }
   );
   while (socket.posAccuracy != -1 && socket.posAccuracy < desiredLocAccuracy) {

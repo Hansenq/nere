@@ -1,0 +1,12 @@
+Notes on how rooms are done:
+
+Upon connection, people will first join the room determined by their ip address. This is saved in a array called roomsIp, which represents rooms without any location data attached to them.
+
+If the client does decide to use location data, their room is changed to the room specified by their location (and thus not ip), and that room is stored in the array room, which contains clients that have both location and ip data.
+
+If the client specifically denies us the right to use location data, we have no further way to identify them, so they remain in the original room based on their ip address, until location access is allowed.
+
+
+
+Other thoughts:
+Client should never see anything about a room except for the roomId; otherwise we risk leaking personal information!
