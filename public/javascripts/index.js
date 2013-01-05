@@ -36,12 +36,16 @@ function checkCookie(c_name)
 }
 
 function message(chat, senderName) {
-
   $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;' + chat + '<br>'); 
   
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
+}
 
+function changeRooms(roomId) {
+  socket.emit('Change rooms', roomId);
+  message('Leaving room...', 'System');
+  socket.roomId = roomId;
 }
 
 // Begin using socket.io
@@ -54,9 +58,9 @@ if (username === -1) {
 // Initialize socket variables
 socket.clientName = username;
 socket.clientID = datetime;
-
+socket.roomId = ipAddress;
 username = null;
-socket.emit('Set client name and ID', socket.clientName, socket.clientID);
+socket.emit('Set client name and id', socket.clientName, socket.clientID);
 socket.emit('Get all lobby users');
 
 // This updates the client's input box, and the input box only.
@@ -66,6 +70,13 @@ socket.on('Display client', function (name) {
 
 socket.on('Display new nearby user', function (name, id) {
   $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong></div>');
+});
+
+socket.on('Refresh all lobby users', function (lobbyNames, lobbyIDs) {
+  $('.users').empty();
+  for (var i=0; i<lobbyNames.length; i++){
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
+  }
 });
 
 socket.on('Display all lobby users', function (lobbyNames, lobbyIDs) {
@@ -116,7 +127,12 @@ socket.on('Display new file', function (fpfile, senderName) {
 
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
+});
 
+socket.on('Change room', function(id) {
+  socket.roomId = id;
+  $('.posts-container').empty();
+  message('Your room has been changed!', 'System');
 });
 
 socket.on('Display new chat', function (chat, senderName){
@@ -155,8 +171,8 @@ $(document).ready(function() {
         socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
         $(this).val('').focus();
-    }
-  });
+      }
+    });
 
   // Enable save to cookies for 1 day
   $('.sidebar .self-block input').keypress(function(event) {
@@ -183,5 +199,4 @@ $(document).ready(function() {
 
   // Default focus to .messenger input
   $('.messenger .chat-sender input').focus();
-
 });
