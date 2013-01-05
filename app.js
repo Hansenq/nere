@@ -54,7 +54,7 @@ function calcDistance(x1, y1, x2, y2) {
 function Room (id) {
   this.id = id;
   this.name = null;
-  this.radius = 100;     // default radius to 25m
+  this.radius = 25;     // default radius to 25m
   this.numUsers = 0;
   this.cenLat = 0;
   this.cenLong = 0;
