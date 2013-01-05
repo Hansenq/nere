@@ -54,11 +54,6 @@ username = null;
 socket.emit('Set client name', socket.clientName);
 socket.emit('Get all lobby users');
 
-// Experimental heartbeat to prevent sockets from timing out.
-socket.on('ping', function(data){
-  socket.emit('pong', {beat: 1});
-});
-
 socket.on('Display client name', function (name) {
   $('.self-block input').val(name);
 });
