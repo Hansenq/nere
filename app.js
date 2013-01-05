@@ -47,8 +47,20 @@ io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 3); 
 });
+setTimeout(sendHeartbeat, 8000);
+
+// Experimental heartbeat to prevent sockets from timing out.
+function sendHeartbeat(){
+    setTimeout(sendHeartbeat, 8000);
+    io.sockets.emit('ping', { beat : 1 });
+}
 
 io.sockets.on('connection', function (socket) {
+
+  // Experimental heartbeat to prevent sockets from timing out.
+  socket.on('pong', function(data){
+    console.log("Pong received from client");
+  });
 
   function getLobbyNames() {
     var lobby = io.sockets.clients(socket.ip);
