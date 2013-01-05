@@ -67,7 +67,6 @@ function reCalcCenter(plusMinus, latitude, longitude) {
   this.cenLong = (this.cenLong * this.numUsers  + longitude) / (this.numUsers + plusMinus);
 }
 
-// uGH of -1 if we can't use it
 Room.prototype.addSocket = function (socket) {
   reCalcCenter(1, socket.latitude, socket.longitude);
   this.numUsers++;
@@ -84,13 +83,12 @@ Room.prototype.addSocket = function (socket) {
   return this;
 }
 
-// -1 reserved for global unused. 0 used as unused.
 Room.prototype.removeSocket = function(socket) {
   reCalcCenter(-1, socket.latitude, socket.longitude);
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.sockets.length; i++) {
-    if (this.sockets[i] === uIP) {
+    if (this.sockets[i].clientId === socket.clientId) {
       this.sockets[i] = null;
     }
     if (empty === false && this.sockets[i] != null) {
@@ -150,23 +148,23 @@ function findNearestRoomLoc(latitude, longitude) {
       }
     }
   }
-  if (closestRoom = -1) {
-    var room = new Room((new Date()).getTime);
-    if (nullVal === -1) {
-      rooms[nullVal] = room;
-    } else {
-      rooms[rooms.length] = room;
-    }
-    return room;
+  if (closestRoom != -1) {
+    return rooms[closestRoom];
   }
-  return rooms[closestRoom];
+  var room = new Room((new Date()).getTime);
+  if (nullVal != -1) {
+    rooms[nullVal] = room;
+  } else {
+    rooms[rooms.length] = room;
+  }
+  return room;
 }
 
 // Also creates a room if there is not one already
 function getRoomFromId(roomId) {
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].id === roomId) {
+    if (rooms[i] != null && rooms[i].id === roomId) {
       return rooms[i];
     }
     if (rooms[i] === null && nullVal === -1) {
@@ -174,7 +172,7 @@ function getRoomFromId(roomId) {
     }
   }
   var room = new Room(roomId);
-  if (nullVal === -1) {
+  if (nullVal != -1) {
     rooms[nullVal] = room;
   } else {
     rooms[rooms.length] = room;
@@ -190,16 +188,21 @@ function getRoomFromId(roomId) {
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
   function changeRooms(newRoom) {
-    io.sockets.in(socket.roomId).emit('Delete user', socket.clientId);
+    io.sockets.in(socket.roomId).emit('Delete user', socket.clientName, socket.clientId);
     socket.room.removeSocket(this);
     socket.leave(socket.roomId);
     socket.roomId = newRoom.id;
-    socket.join(socket.roomId);
     socket.room = newRoom;
+    console.log(newRoom);
+    socket.join(socket.roomId);
     newRoom.addSocket(this);
     socket.emit('Change room', newRoom.id);
     socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIDs());
-    socket.broadcast.to(socket.roomId).emit('Display new nearby user', socket.clientName);
+    socket.broadcast.to(socket.roomId).emit('Display new nearby user', socket.clientName, socket.clientId);
+  }
+
+  function message(message) {
+    io.sockets.in(socket.roomId).emit('announcement', message);
   }
 
   function getLobbyNames() {
@@ -242,6 +245,7 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(socket.roomId).emit('Change nearby name', newName, oldName, id);
   });
 
+  // For future use
   socket.on('Change rooms', function(newRoomId) {
     if (socket.room.id != newRoomId) {
       changeRooms(getRoomFromId(newRoomId));
