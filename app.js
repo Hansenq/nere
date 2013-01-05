@@ -90,13 +90,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Send new chat', function (chat, senderName) {
-    var lobbyNames = getLobbyNames();
-    var listOfNames = ' RECEIVERS: ';
-    for (var i=0; i<lobbyNames.length; i++){
-      listOfNames += lobbyNames[i];
-      listOfNames += ', ';
-    }
-    io.sockets.in(socket.ip).emit('Display new chat', chat + listOfNames, senderName);
+    io.sockets.in(socket.ip).emit('Display new chat', chat, senderName);
   });
 
   socket.on('disconnect', function () {

@@ -161,6 +161,7 @@ $(document).ready(function() {
   // Enable save to cookies for 1 day
   $('.sidebar .self-block input').keypress(function(event) {
     // Saves name to cookies when client presses enter (13)
+    // NOTE: We should ask trigger this when they input box loses focus.
     if (event.which == 13) {
       event.preventDefault();
       var newName = $(this).val();
@@ -178,7 +179,6 @@ $(document).ready(function() {
       setCookie('username', newName, 1);
       socket.emit('Change client name', newName, oldName, socket.clientID);
       socket.clientName = newName;
-      alert('Saved username.');
     }
   });
 
