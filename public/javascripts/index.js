@@ -161,7 +161,6 @@ $(document).ready(function() {
   // Enable save to cookies for 1 day
   $('.sidebar .self-block input').keypress(function(event) {
     // Saves name to cookies when client presses enter (13)
-    // NOTE: We should ask trigger this when they input box loses focus.
     if (event.which == 13) {
       event.preventDefault();
       var newName = $(this).val();
