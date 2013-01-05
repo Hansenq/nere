@@ -99,6 +99,7 @@ socket.on('Delete name', function (name) {
 
 socket.on('Change room', function(id) {
   socket.roomId = id;
+  $('.posts-container').clear();
   message('Your room has been changed!', 'System');
 });
 

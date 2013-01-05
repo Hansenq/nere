@@ -31,7 +31,7 @@ function usePosition() {
 
 // Runs when location cannot be obtained.
 function useIPAddr() {
-
+  socket.emit('Use ip info');
 }
 
 

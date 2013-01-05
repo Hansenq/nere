@@ -274,6 +274,6 @@ io.sockets.on('connection', function (socket) {
 
 var port = process.env.PORT || app.get('port');
 
-server.listen(port, function(){
+server.listen(port, function() {
   console.log("Express server listening on port " + port + " in " + app.settings.env + " mode");
 });
