@@ -34,19 +34,19 @@ app.configure('production', function() {
 });
 
 // gives X amount of time to reopen connection
-io.configure(function() {
-  io.set('close timeout', 5);
-});
+//io.configure(function() {
+ // io.set('close timeout', 5);
+//});
 
 // App Routes
 app.get('/', routes.index);
 app.get('/users', user.list);
 
 // Code for Heroku socket.io compatibility; default 10 seconds
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 3); 
-});
+//io.configure(function () { 
+ // io.set("transports", ["xhr-polling"]); 
+  //io.set("polling duration", 3); 
+//});
 
 io.sockets.on('connection', function (socket) {
 
