@@ -89,6 +89,7 @@ socket.on('Delete name', function (name) {
   $('.user-block').each(function(){
     if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong>'){
       $(this).remove();
+      console.log('Deleting ' + name);
     }
   });
 });
