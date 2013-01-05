@@ -45,9 +45,8 @@ app.get('/users', user.list);
 // Code for Heroku socket.io compatibility; default 10 seconds
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 3); 
+  io.set("polling duration", 10); 
 });
-setTimeout(sendHeartbeat, 8000);
 
 io.sockets.on('connection', function (socket) {
 
