@@ -191,61 +191,6 @@ $(document).ready(function() {
 });
 
 /*
-
-// Below is code for the chat client!
-socket.on('joinChat', function() {
-  $('#chatClient').addClass('connected');
-})
-
-socket.on('announcement', function (msg) {
-  $('#lines').append($('<p>').append($('<em>').text(msg)));
-});
-
-socket.on('allUsers', function(users) {
-  $('#users').empty().append($('<span>Online: </span>'));
-  for (var i in nicknames) 
-    $('#users').append($('<b>').text(nicknames[i]));
-});
-
-socket.on('userMessage', message);
-
-// System Messages!
-socket.on('reconnected', function() {
-  message('System', 'Reconnected to server.');
-});
-socket.on('reconnecting', function() {
-  message('System', 'Reconnecting to server...');
-});
-socket.on('error', function(e) {
-  message('System', e ? e : 'An unknown error occurred.');
-});
-
-
-function message (from, msg) {
-  $('#lines').append($('<p>').append($('<b>').text(from), msg));
-  $('#lines').get(0).scrollTop = 1000000000;
-}
-
-// DOM manipulation
-$(function() {
-  $('#send-message').submit(function() {
-    //message('me', $('message').val());
-    socket.emit('userMessage', $('#message').val(), function(msg) {
-      message('me', msg);
-    });
-    clear();
-    $('#lines').get(0).scrollTop = 1000000000;
-    return false;
-  });
-
-  function clear() {
-    $('#message').val('').focus();
-  };
-});
-
-*/
-
-/*
   
   // Enable user-block color change on hover over
   $(".user-block").hover(
