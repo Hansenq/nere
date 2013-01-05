@@ -111,7 +111,7 @@ socket.on('Display new file', function (fpfile, senderName) {
           '<td>' + senderName + '</td>' +
           '<td>' + fpfile.filename + '</td>' +
           '<td>' + fpfile.url + '</td>' +
-          '<td><a class="btn btn-primary btn-block" href="' + fpfile.url + '">Download</a></th>' +
+          '<td><a class="btn btn-primary btn-block" href="' + fpfile.url + '" target="_blank">Download</a></th>' +
         '</tr>' +
       '</tbody>' +
     '</table>'
