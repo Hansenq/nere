@@ -190,7 +190,7 @@ function getRoomFromId(roomId) {
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
   function changeRooms(newRoom) {
-    io.sockets.in(socket.roomId).emit('Delete user', socket.clientName);
+    io.sockets.in(socket.roomId).emit('Delete user', socket.clientId);
     socket.room.removeSocket(this);
     socket.leave(socket.roomId);
     socket.roomId = newRoom.id;

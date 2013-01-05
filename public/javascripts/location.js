@@ -26,15 +26,12 @@ function usePosition() {
   if (socket.posLatitude != -1 && socket.posLongitude != -1) {
     socket.emit('Send loc info', socket.posLatitude, socket.posLongitude);
   }
-
 }
 
 // Runs when location cannot be obtained.
 function useIPAddr() {
   socket.emit('Use ip info');
 }
-
-
 
 if (navigator.geolocation) {
   var watchId = navigator.geolocation.watchPosition(
