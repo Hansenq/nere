@@ -54,7 +54,6 @@ if (username === -1) {
 socket.clientName = username;
 socket.roomId = ipAddress;
 username = null;
-var rooms = {ipAddress};
 socket.emit('Set client name', socket.clientName);
 socket.emit('Get all lobby users');
 
@@ -96,6 +95,11 @@ socket.on('Delete name', function (name) {
       $(this).remove();
     }
   });
+});
+
+socket.on('Change room', function(id) {
+  socket.roomId = id;
+  message('Your room has been changed!', 'System');
 });
 
 socket.on('Display new file', function (fileURL, filename, senderName) {

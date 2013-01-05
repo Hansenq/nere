@@ -49,83 +49,71 @@ io.configure(function () {
   io.set("polling duration", 3); 
 });
 
+// 
 var rooms = [];
 
+// Misc Calculation Functions
+function calcDistance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1,  2));
+}
+
 // Room class
-function Room (name) {
-  this.name = name;
-  this.radius = -1;
+function Room (id) {
+  this.id = id;
+  this.name = null;
+  this.radius = 25;     // default radius to 25m
   this.numUsers = 0;
   this.cenLat = 0;
   this.cenLong = 0;
-  this.geohashMean = [];
-  this.geohashes = [];    // could be bst, but each room won't be that big!
-  this.ips = [];        // " " "
+  this.sockets = [];
 }
 
 // for plusMinus: 1 if adding user, -1 if removing users
-function reCalcCenter(plusMinus, ip, latitude, longitude) {
+function reCalcCenter(plusMinus, latitude, longitude) {
   this.cenLat = (this.cenLat * this.numUsers  + latitude) / (this.numUsers + plusMinus);
   this.cenLong = (this.cenLong * this.numUsers  + longitude) / (this.numUsers + plusMinus);
 }
 
 // uGH of -1 if we can't use it
-Room.prototype.addUser = function (uIP, latitude, longitude) {
-  reCalcCenter(1, uIP, latitude, longitude);
+Room.prototype.addSocket = function (socket) {
+  reCalcCenter(1, socket.latitude, socket.longitude);
   this.numUsers++;
-  var ip = false; gh = false;
-  for (var i = 0; i < this.ips.length; i++) {
-    if (this.ips[i] === null) {
-      this.ips[i] = uIP;
-      ip = true;
-    }
-    if (this.geohashes[i] === null) {
-      this.geohashes[i] = {
-        latitude: latitude,
-        longitude: longitude
-      };
-      gh = true;
+  var hasSpace = false;
+  for (var i = 0; i < this.sockets.length; i++) {
+    if (this.sockets[i] === null) {
+      this.sockets[i] = socket;
+      hasSpace = true;
     }
   }
   if (ip === false) {
-    this.ips[this.ips.length] = uIP;
+    this.sockets[this.sockets.length] = socket;
   }
-  if (gh === false) {
-    this.geohashes[this.geohashes.length] = {
-      latitude: latitude,
-      longitude: longitude
-    };
-  }
+  return this;
 }
 
 // -1 reserved for global unused. 0 used as unused.
-Room.prototype.removeUser = function(uIP, latitude, longitude) {
-  reCalcCenter(-1, uIP, latitude, longitude);
+Room.prototype.removeSocket = function(socket) {
+  reCalcCenter(-1, socket.latitude, socket.longitude);
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.ips.length; i++) {
-    if (empty === false && (this.ips[i] != null || this.geohashes[i] != null)) {
-      empty = false;
-    }
     if (this.ips[i] === uIP) {
       this.ips[i] = null;
     }
-    if (this.geohashes[i] === uGH) {
-      this.geohashes[i] = null;
+    if (empty === false && this.ips[i] != null) {
+      empty = false;
     }
   }
   if (empty === true) {
-    removeRoom(this.name);
+    removeRoom(this.id);
   }
-}
-
 
 // Might as well convert this to a binary search tree sometime..
 function addRoom(roomName) {
   var exists = false;
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].name === roomName) {
+    if (rooms[i].id === roomName) {
       exists = true;
     }
     if (rooms[i] === null && nullVal = -1) {
@@ -141,14 +129,71 @@ function addRoom(roomName) {
   }
 }
 
-
-function removeRoom(roomName) {
+function removeRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].name === roomName) {
+    if (rooms[i].id === roomId) {
       rooms[i] = null;
     }
   }
 }
+
+// Calculates and returns the room closest to the given point.
+// Creates new room if point is far away from other rooms
+function findNearestRoomLoc(latitude, longitude) {
+  var closestDist = 10000, closestRoom = -1;
+  var dist = 100000, room = null;
+  for (var i = 0; i < rooms.length; i++) {
+    room = rooms[i];
+    dist = calcDistance(latitude, longitude, room.cenLat, room.cenLong);
+    if (dist < room.radius) {
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestRoom = i;
+      }
+    }
+  }
+  if (closestRoom = -1) {
+    room = new Room((new Date()).getTime());
+    rooms[rooms.length] = room;
+    return room;
+  }
+  return closestRoom;
+}
+
+// Also creates a room if there is not one already
+function getRoomFromId(roomId) {
+  var nullVal = -1;
+  for (var i = 0; i < rooms.length; i++) {
+    if (rooms[i].id === roomId) {
+      return rooms[i];
+    }
+    if (rooms[i] === null && nullVal = -1) {
+      nullVal = i;
+    }
+  }
+  if (nullVal === -1) {
+    rooms[nullVal] = new Room(roomName);
+  } else {
+    rooms[rooms.length] = new Room(roomName);
+  }
+}
+
+// Socket managerial functions
+function changeRooms(newRoom) {
+  io.sockets.in(socket.roomId).emit('Delete name', socket.clientName);
+  socket.room.removeSocket(this);
+  socket.leave(socket.roomId);
+  socket.roomId = newRoom.id;
+  socket.join(socket.roomId);
+  socket.room = newRoom;
+  newRoom.addSocket(this);
+  socket.emit('Change room', newRoom.id);
+  socket.emit('Refresh all lobby names', getLobbyNames());
+  sockets.broadcast.to(socket.roomId).emit('Display new nearby name', socket.name);
+}
+
+
+
 
 io.sockets.on('connection', function (socket) {
   function getLobbyNames() {
@@ -162,13 +207,14 @@ io.sockets.on('connection', function (socket) {
   };
 
 
-  
+  // roomId = ip
   socket.on('Join room with ip', function(roomId) {
     console.log('Joining room ' + roomId);
     socket.roomId = roomId;
     socket.ip = roomId;
+    socket.room = getRoomFromId(roomId);
     socket.join(socket.roomId);
-  })
+  });
 
 
   socket.on('Set client name', function (name) {
@@ -184,10 +230,9 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Change rooms', function(newRoomId) {
-    socket.leave(socket.roomId);
-    socket.roomId = roomId;
-    socket.join(socket.roomId);
-    // CODE
+    if (socket.room.id != newRoomId) {
+      changeRooms(getRoomFromId(newRoomId));
+    }
   });
 
   socket.on('Get all lobby users', function () {
@@ -207,7 +252,16 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Send loc info', function(latitude, longitude) {
-    // CODE
+    socket.latitude = latitude;
+    socket.longitude = longitude;
+    var room = rooms[findNearestRoomLoc(latitude, longitude)].addSocket(socket);
+    if (room.id != socket.roomId) {
+      changeRooms(room);
+    }
+  });
+
+  socket.on('Use ip info', function() {
+    // No change (yet!)
   });
 
   socket.on('disconnect', function () {

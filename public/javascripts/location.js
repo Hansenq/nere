@@ -2,8 +2,8 @@
 var socket.posLatitude = -1, 
     socket.posLongitude = -1, 
     socket.posAccuracy = -1;
-var desiredLocAccuracy = 100, 
-    posIntervalTime = 10000, 
+var desiredLocAccuracy = 50, // meters
+    positionTimeout = 10000, // time it takes 
     geohashDigitAccuracy = 8;   // 6 = 610m, 7 = 76m, 8 = 19m
 
 function positionSuccess(position) {
@@ -50,5 +50,5 @@ if (navigator.geolocation) {
   setTimeout(function() {
     navigator.geolocation.clearWatch(watchId);
     usePosition();
-  }, 5000);
+  }, positionTimeout);
 };
