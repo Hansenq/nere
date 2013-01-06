@@ -39,7 +39,7 @@
 // Code for Heroku socket.io compatibility
 io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 3); 
+  io.set("polling duration", 10); 
   //io.set('close timeout', 7);
 });
 
@@ -90,7 +90,7 @@ Room.prototype.removeSocket = function(socket) {
     if (this.sockets[i] != null && this.sockets[i].clientId === socket.clientId) {
       this.sockets[i] = null;
     }
-    if (empty === false && this.sockets[i] != null) {
+    if (empty === true && this.sockets[i] != null) {
       empty = false;
     }
   }
@@ -123,6 +123,7 @@ function addRoom(roomName) {
 function removeRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i] != null && rooms[i].id === roomId) {
+      console.log('ALERT! Room ' + rooms[i].id + ' has been set to NULL!');
       rooms[i] = null;
     }
   }
@@ -179,7 +180,6 @@ function getRoomFromId(roomId) {
   }
   return room;
 }
-
 
 
 
