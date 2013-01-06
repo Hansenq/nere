@@ -177,8 +177,9 @@ $(document).ready(function() {
 
   // Enable chat
   $('.messenger .chat-sender input').keypress(function(event) {
-    // Send chat when client presses enter (13), and only if input is not empty
-    if (event.which == 13 && $(this).val() !== "") {
+    // Send chat when client presses enter (13), and only if input and roomId are not empty
+    // Check roomId in case user neither confirmed NOR denied location
+    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
         event.preventDefault();
         socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
@@ -188,8 +189,9 @@ $(document).ready(function() {
 
   // Enable save to cookies for 1 day
   $('.sidebar .self-block input').keypress(function(event) {
-    // Saves name to cookies when client presses enter (13)
-    if (event.which == 13) {
+    // Saves name to cookies when client presses enter (13), and only if roomId is not empty
+    // Check roomId in case user neither confirmed NOR denied location
+    if (event.which == 13 && socket.roomId != null) {
       event.preventDefault();
       var newName = $(this).val();
       $(this).blur();
