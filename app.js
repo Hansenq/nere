@@ -74,9 +74,11 @@ function Room (id) {
 }
 
 Room.prototype.addSocket = function (socket) {
-  var plusMinus = 1;
-  this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
-  this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
+  if (isNaN(socket.latitude) === false && isNaN(socket.longitude) === false) {
+    var plusMinus = 1;
+    this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
+    this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
+  }
   this.numUsers++;
   var hasSpace = false;
   for (var i = 0; i < this.sockets.length; i++) {
@@ -94,9 +96,11 @@ Room.prototype.addSocket = function (socket) {
 }
 
 Room.prototype.removeSocket = function(socket) {
-  var plusMinus = -1;
-  this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
-  this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
+  if (isNaN(socket.latitude) === false && isNaN(socket.longitude) === false) {
+    var plusMinus = -1;
+    this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
+    this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
+  }
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.sockets.length; i++) {
@@ -158,6 +162,9 @@ function findNearestRoomLoc(latitude, longitude) {
     room = rooms[i];
     if (room === null) {
       nullVal = i;
+      continue;
+    }
+    if (isNaN(room.cenLat) === true || isNaN(room.cenLong) === true) {
       continue;
     }
     dist = calcDistance(latitude, longitude, room.cenLat, room.cenLong);
