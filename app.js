@@ -152,7 +152,7 @@ function findNearestRoomLoc(latitude, longitude) {
   if (closestRoom != -1) {
     return rooms[closestRoom];
   }
-  var room = new Room((new Date()).getTime);
+  var room = new Room((new Date()).getTime());
   if (nullVal != -1) {
     rooms[nullVal] = room;
   } else {
