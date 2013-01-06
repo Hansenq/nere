@@ -70,6 +70,7 @@ socket.on('Display client', function (name) {
 
 socket.on('Display new nearby user', function (name, id) {
   $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong></div>');
+  message(name + ' connected.', 'System');
 });
 
 socket.on('Refresh all lobby users', function (lobbyNames, lobbyIDs) {
@@ -91,6 +92,7 @@ socket.on('Change nearby name', function(newName, oldName, id) {
       $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + newName + '</strong>');
     }
   });
+  message(oldName + ' changed his/her name to ' + newName, 'System');
 });
 
 socket.on('Delete user', function (name, id) {
@@ -99,6 +101,7 @@ socket.on('Delete user', function (name, id) {
       $(this).remove();
     }
   });
+  message(name + ' disconnected.', 'System');
 });
 
 socket.on('Display new file', function (fpfile, senderName) {
@@ -124,7 +127,6 @@ socket.on('Display new file', function (fpfile, senderName) {
       '</tbody>' +
     '</table>'
   ); 
-
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 });
@@ -132,7 +134,7 @@ socket.on('Display new file', function (fpfile, senderName) {
 socket.on('Change room', function(id) {
   socket.roomId = id;
   $('.posts-container').empty();
-  message('Your room has been changed!', 'System');
+  message('Your room has been changed to ' + id + '!', 'System');
 });
 
 socket.on('Display new chat', function (chat, senderName){

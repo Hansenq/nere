@@ -39,8 +39,8 @@
 // Code for Heroku socket.io compatibility
 io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 5); 
-  io.set('close timeout', 10);
+  io.set("polling duration", 3); 
+  //io.set('close timeout', 7);
 });
 
 // 
@@ -55,22 +55,17 @@ function calcDistance(x1, y1, x2, y2) {
 function Room (id) {
   this.id = id;
   this.name = null;
-  this.radius = 25;     // default radius to 25m
+  this.radius = 100;     // default radius to 100m
   this.numUsers = 0;
-  this.cenLat = 0;
-  this.cenLong = 0;
+  this.cenLat = 0.0;
+  this.cenLong = 0.0;
   this.sockets = [];
 }
 
-// for plusMinus: 1 if adding user, -1 if removing users
-function reCalcCenter(plusMinus, latitude, longitude) {
-  this.cenLat = (this.cenLat * this.numUsers  + latitude) / (this.numUsers + plusMinus);
-  this.cenLong = (this.cenLong * this.numUsers  + longitude) / (this.numUsers + plusMinus);
-}
-
 Room.prototype.addSocket = function (socket) {
-  reCalcCenter(1, socket.latitude, socket.longitude);
-  this.numUsers++;
+  var plusMinus = 1;
+  this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
+  this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
   var hasSpace = false;
   for (var i = 0; i < this.sockets.length; i++) {
     if (this.sockets[i] === null) {
@@ -81,11 +76,14 @@ Room.prototype.addSocket = function (socket) {
   if (hasSpace === false) {
     this.sockets[this.sockets.length] = socket;
   }
-  return this;
+  console.log('Added socket of position: ' + socket.latitude + ', ' + socket.longitude);
+  console.log('New center: ' + this.cenLat + ', ' + this.cenLong);
 }
 
 Room.prototype.removeSocket = function(socket) {
-  reCalcCenter(-1, socket.latitude, socket.longitude);
+  var plusMinus = -1;
+  this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
+  this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.sockets.length; i++) {
@@ -124,7 +122,7 @@ function addRoom(roomName) {
 
 function removeRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].id === roomId) {
+    if (rooms[i] != null && rooms[i].id === roomId) {
       rooms[i] = null;
     }
   }
@@ -141,6 +139,7 @@ function findNearestRoomLoc(latitude, longitude) {
       nullVal = i;
       continue;
     }
+    console.log(latitude + ', ' + longitude + ' near ' + rooms[i].cenLat + ', ' + rooms[i].cenLong);
     dist = calcDistance(latitude, longitude, room.cenLat, room.cenLong);
     if (dist < room.radius) {
       if (dist < closestDist) {
@@ -152,7 +151,7 @@ function findNearestRoomLoc(latitude, longitude) {
   if (closestRoom != -1) {
     return rooms[closestRoom];
   }
-  var room = new Room((new Date()).getTime);
+  var room = new Room((new Date()).getTime());
   if (nullVal != -1) {
     rooms[nullVal] = room;
   } else {
@@ -190,13 +189,13 @@ io.sockets.on('connection', function (socket) {
   // Socket managerial functions
   function changeRooms(newRoom) {
     io.sockets.in(socket.roomId).emit('Delete user', socket.clientName, socket.clientId);
-    socket.room.removeSocket(this);
+    socket.room.removeSocket(socket);
     socket.leave(socket.roomId);
     socket.roomId = newRoom.id;
     socket.room = newRoom;
     console.log(newRoom);
     socket.join(socket.roomId);
-    newRoom.addSocket(this);
+    newRoom.addSocket(socket);
     socket.emit('Change room', newRoom.id);
     socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIDs());
     socket.broadcast.to(socket.roomId).emit('Display new nearby user', socket.clientName, socket.clientId);
@@ -265,10 +264,11 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(socket.roomId).emit('Display new chat', chat, senderName);
   });
 
-  socket.on('Send loc info', function(latitude, longitude) {
+  socket.on('Send loc info', function(latitude, longitude, accuracy) {
     socket.latitude = latitude;
     socket.longitude = longitude;
-    var room = findNearestRoomLoc(latitude, longitude).addSocket(socket);
+    socket.accuracy = accuracy;
+    var room = findNearestRoomLoc(latitude, longitude);
     if (room.id != socket.roomId) {
       changeRooms(room);
     }
