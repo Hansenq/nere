@@ -46,48 +46,45 @@ function message(chat, senderName) {
 
 // Begin using socket.io
 var username = checkCookie('username');
+var datetime = (new Date()).getTime();
 if (username === -1) {
-  username = (new Date()).getTime();
+  username = datetime;
 }
+
+// Initialize socket variables
 socket.clientName = username;
+socket.clientID = datetime;
+
 username = null;
-socket.emit('Set client name', socket.clientName);
+socket.emit('Set client name and ID', socket.clientName, socket.clientID);
 socket.emit('Get all lobby users');
 
-socket.on('Display client name', function (name) {
+// This updates the client's input box, and the input box only.
+socket.on('Display client', function (name) {
   $('.self-block input').val(name);
 });
 
-socket.on('Display new nearby name', function (name) {
-  $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong></div>');
+socket.on('Display new nearby user', function (name, id) {
+  $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong></div>');
 });
 
-socket.on('Display all lobby names', function (lobbyNames) {
+socket.on('Display all lobby users', function (lobbyNames, lobbyIDs) {
   for (var i=0; i<lobbyNames.length; i++){
-    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
   }
 });
 
-socket.on('Refresh all lobby names', function (lobbyNames) {
-  $('.user-block').each(function() {
-    $(this).remove();
-  });
-  for (var i=0; i<lobbyNames.length; i++){
-    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong>' + lobbyNames[i] + '</strong></div>');
-  }
-})
-
-socket.on('Change nearby name', function(newName, oldName) {
+socket.on('Change nearby name', function(newName, oldName, id) {
   $('.user-block').each(function(){
-    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + oldName + '</strong>'){
-      $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + newName + '</strong>');
+    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + oldName + '</strong>'){
+      $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + newName + '</strong>');
     }
   });
 });
 
-socket.on('Delete name', function (name) {
+socket.on('Delete user', function (name, id) {
   $('.user-block').each(function(){
-    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong>' + name + '</strong>'){
+    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong>'){
       $(this).remove();
     }
   });
@@ -179,9 +176,8 @@ $(document).ready(function() {
         setCookie('username', '', -1);
       }
       setCookie('username', newName, 1);
-      socket.emit('Change client name', newName, oldName);
+      socket.emit('Change client name', newName, oldName, socket.clientID);
       socket.clientName = newName;
-      alert('Saved username.');
     }
   });
 
@@ -189,17 +185,3 @@ $(document).ready(function() {
   $('.messenger .chat-sender input').focus();
 
 });
-
-/*
-  
-  // Enable user-block color change on hover over
-  $(".user-block").hover(
-    function(){
-      $(this).css("background-color", "#f0f0f0");
-    },
-    function(){
-      $(this).css("background-color", "#ffffff");
-    }
-  );
-
-*/

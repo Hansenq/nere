@@ -33,13 +33,6 @@ app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
-/*
-// gives X amount of time to reopen connection
-io.configure(function() {
-  io.set('close timeout', 5);
-});
-*/
-
 app.get('/', routes.index);
 app.get('/users', user.list);
 
@@ -59,6 +52,15 @@ io.sockets.on('connection', function (socket) {
     }
     return lobbyNames;
   };
+
+  function getLobbyIDs() {
+    var lobby = io.sockets.clients(socket.ip);
+    var lobbyIDs = [];
+    for (var i = 0; i < lobby.length; i++){
+      lobbyIDs[lobbyIDs.length] = lobby[i].clientID;
+    }
+    return lobbyIDs;
+  };
   
   socket.on('Initialize IP', function(ip) {
     console.log('Joining room ' + ip);
@@ -66,24 +68,21 @@ io.sockets.on('connection', function (socket) {
     socket.join(socket.ip);
   })
 
-  socket.on('Set client name', function (name) {
+  socket.on('Set client name and ID', function (name, id) {
     socket.clientName = name;
-    socket.emit('Display client name', name);
-    socket.broadcast.to(socket.ip).emit('Display new nearby name', name);
+    socket.clientID = id;
+    socket.emit('Display client', socket.clientName);
+    socket.broadcast.to(socket.ip).emit('Display new nearby user', socket.clientName, socket.clientID);
   });
 
-  socket.on('Change client name', function(newName, oldName) {
+  socket.on('Change client name', function (newName, oldName, id) {
     socket.clientName = newName;
-    socket.emit('Display client name', newName);
-    io.sockets.in(socket.ip).emit('Change nearby name', newName, oldName);
+    socket.emit('Display client', newName);
+    io.sockets.in(socket.ip).emit('Change nearby name', newName, oldName, id);
   })
 
   socket.on('Get all lobby users', function () {
-    socket.emit('Display all lobby names', getLobbyNames());
-  });
-
-  socket.on('Refresh all lobby users', function() {
-    socket.emit('Refresh all lobby names', getLobbyNames());
+    socket.emit('Display all lobby users', getLobbyNames(), getLobbyIDs());
   });
 
   socket.on('Send new file', function (fpfile, senderName) {
@@ -91,18 +90,12 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Send new chat', function (chat, senderName) {
-    var lobbyNames = getLobbyNames();
-    var listOfNames = ' RECEIVERS: ';
-    for (var i=0; i<lobbyNames.length; i++){
-      listOfNames += lobbyNames[i];
-      listOfNames += ', ';
-    }
-    io.sockets.in(socket.ip).emit('Display new chat', chat + listOfNames, senderName);
+    io.sockets.in(socket.ip).emit('Display new chat', chat, senderName);
   });
 
   socket.on('disconnect', function () {
     console.log('Leaving room ' + socket.ip);
-    socket.broadcast.to(socket.ip).emit('Delete name', socket.clientName);
+    socket.broadcast.to(socket.ip).emit('Delete user', socket.clientName, socket.clientID);
     socket.leave(socket.ip);
   });
 });
