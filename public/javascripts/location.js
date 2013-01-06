@@ -2,7 +2,7 @@
 socket.posLatitude = -1;
 socket.posLongitude = -1;
 socket.posAccuracy = -1;
-var desiredLocAccuracy = 100; // meters
+var desiredLocAccuracy = 70; // meters
 var positionTimeout = 15000; // time to wait for location response before defaulting.
 var answered = false;
 

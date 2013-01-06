@@ -171,7 +171,7 @@ $(document).ready(function() {
   // Enable file sender button
   // Check roomId in case user neither confirmed NOR denied location
   $('.file-sender').click(function(){
-    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
+    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
         socket.emit('Send new file', fpfile, socket.clientName);
       });
@@ -180,9 +180,9 @@ $(document).ready(function() {
 
   // Enable chat
   $('.messenger .chat-sender input').keypress(function(event) {
-    // Send chat when client presses enter (13), and only if input and roomId are not empty
+    // Send chat when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
-    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
+    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
         event.preventDefault();
         socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
@@ -192,9 +192,9 @@ $(document).ready(function() {
 
   // Enable save to cookies for 1 day
   $('.sidebar .self-block input').keypress(function(event) {
-    // Saves name to cookies when client presses enter (13), and only if roomId is not empty
+    // Saves name to cookies when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
-    if (event.which == 13 && socket.roomId != null) {
+    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
       var newName = $(this).val();
       $(this).blur();
