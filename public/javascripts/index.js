@@ -59,6 +59,8 @@ if (username === -1) {
 socket.clientName = username;
 socket.clientID = datetime;
 username = null;
+message('Please allow location services for the best experience!', 'System');
+message('nere first uses location to determine peers around you, and falls back on IP address if that\'s unavailable!', 'System');
 
 // Does the same as 'Display client', 'Display all lobby users', 'Join room'
 socket.on('Initialize room', function(name, roomName, lobbyNames, lobbyIDs) {
@@ -67,6 +69,7 @@ socket.on('Initialize room', function(name, roomName, lobbyNames, lobbyIDs) {
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
   }
   socket.roomId = roomName;
+  $('.posts-container').empty();
   message('You have joined the ' + roomName + ' room!', 'System');
 });
 
@@ -141,7 +144,7 @@ socket.on('Display new file', function (fpfile, senderName) {
 socket.on('Join room', function(roomName) {
   socket.roomId = roomName;
   $('.posts-container').empty();
-  message('You have joined the ' + roomName + ' room!', 'System');
+  message('You\'ve joined the ' + roomName + ' room!', 'System');
 });
 
 socket.on('Display new chat', function (chat, senderName){
