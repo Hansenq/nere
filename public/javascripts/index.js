@@ -169,10 +169,13 @@ socket.on('announcement', function (msg) {
 $(document).ready(function() {
 
   // Enable file sender button
+  // Check roomId in case user neither confirmed NOR denied location
   $('.file-sender').click(function(){
-    filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
-      socket.emit('Send new file', fpfile, socket.clientName);
-    });
+    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
+      filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
+        socket.emit('Send new file', fpfile, socket.clientName);
+      });
+    }
   });
 
   // Enable chat
