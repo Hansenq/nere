@@ -39,8 +39,8 @@
 // Code for Heroku socket.io compatibility
 io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 5); 
-  io.set('close timeout', 10);
+  io.set("polling duration", 3); 
+  io.set('close timeout', 6);
 });
 
 // 
@@ -124,7 +124,7 @@ function addRoom(roomName) {
 
 function removeRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].id === roomId) {
+    if (rooms[i] != null && rooms[i].id === roomId) {
       rooms[i] = null;
     }
   }
@@ -265,9 +265,10 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(socket.roomId).emit('Display new chat', chat, senderName);
   });
 
-  socket.on('Send loc info', function(latitude, longitude) {
+  socket.on('Send loc info', function(latitude, longitude, accuracy) {
     socket.latitude = latitude;
     socket.longitude = longitude;
+    socket.accuracy = accuracy;
     var room = findNearestRoomLoc(latitude, longitude).addSocket(socket);
     if (room.id != socket.roomId) {
       changeRooms(room);
