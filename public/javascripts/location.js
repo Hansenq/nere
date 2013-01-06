@@ -4,11 +4,11 @@ socket.posLongitude = -1;
 socket.posAccuracy = -1;
 var desiredLocAccuracy = 100; // meters
 var positionTimeout = 15000; // time to wait for location response before defaulting.
-var timedOut = false;
+var answered = false;
 
 function positionSuccess(position) {
-  if (timedOut === false) {
-    timedOut = true;
+  if (answered === false) {
+    answered = true;
     socket.posLatitude = position.coords.latitude;
     socket.posLongitude = position.coords.longitude;
     socket.posAccuracy = position.coords.accuracy;
@@ -24,7 +24,10 @@ function positionError(error) {
     3: 'Request timeout'
   };
   console.log('Position error: ' + errors[error.code]);
-  useIPAddr();
+  if (answered === false) {
+    answered = true;
+    useIPAddr();
+  }
 }
 
 function usePosition() {
@@ -53,8 +56,8 @@ if (navigator.geolocation) {
 };
 
 setTimeout(function() {
-  if (timedOut === false) {
-    timedOut = true;
+  if (answered === false) {
+    answered = true;
     useIPAddr();
   }
 }, positionTimeout);
