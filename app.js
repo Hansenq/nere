@@ -40,7 +40,7 @@
 io.configure(function () {
   io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10); 
-  io.set('close timeout', 30);
+  //io.set('close timeout', 30);
 });
 
 // 
