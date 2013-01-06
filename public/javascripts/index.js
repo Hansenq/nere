@@ -111,7 +111,7 @@ socket.on('Delete user', function (name, id) {
       $(this).remove();
     }
   });
-  message(name + ' disconnected.', 'System');
+  message(name + ' disconnected a minute ago.', 'System');
 });
 
 socket.on('Display new file', function (fpfile, senderName) {
