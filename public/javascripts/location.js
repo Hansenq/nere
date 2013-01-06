@@ -24,16 +24,18 @@ function positionError(error) {
 
 function usePosition() {
   if (socket.posLatitude != -1 && socket.posLongitude != -1) {
-    socket.emit('Send loc info', socket.posLatitude, socket.posLongitude, socket.posAccuracy);
+    socket.emit('Use loc info', socket.clientName, socket.clientID, socket.posLatitude, socket.posLongitude, socket.posAccuracy, ipAddress);
   }
 }
 
 // Runs when location cannot be obtained.
 function useIPAddr() {
-  socket.emit('Use ip info');
+  socket.emit('Use ip info', socket.clientName, socket.clientID, ipAddress);
+  socket.roomId = ipAddress;
+  // 'Use ip info' does the same as the below two calls
+  //socket.emit('Set client name and id', socket.clientName, socket.clientID);
+  //socket.emit('Get all lobby users');
 }
-
-
 
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(

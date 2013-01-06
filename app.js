@@ -38,9 +38,9 @@
 
 // Code for Heroku socket.io compatibility
 io.configure(function () {
-  io.set("transports", ["xhr-polling"]); 
+  io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10); 
-  // io.set('close timeout', 6);
+  io.set('close timeout', 30);
 });
 
 // 
@@ -54,22 +54,18 @@ function calcDistance(x1, y1, x2, y2) {
 // Room class
 function Room (id) {
   this.id = id;
-  this.name = null;
-  this.radius = 25;     // default radius to 25m
+  this.name = id;
+  this.radius = 100;     // default radius to 100m
   this.numUsers = 0;
   this.cenLat = 0;
   this.cenLong = 0;
   this.sockets = [];
 }
 
-// for plusMinus: 1 if adding user, -1 if removing users
-function reCalcCenter(plusMinus, latitude, longitude) {
-  this.cenLat = (this.cenLat * this.numUsers  + latitude) / (this.numUsers + plusMinus);
-  this.cenLong = (this.cenLong * this.numUsers  + longitude) / (this.numUsers + plusMinus);
-}
-
 Room.prototype.addSocket = function (socket) {
-  reCalcCenter(1, socket.latitude, socket.longitude);
+  var plusMinus = 1;
+  this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
+  this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
   this.numUsers++;
   var hasSpace = false;
   for (var i = 0; i < this.sockets.length; i++) {
@@ -81,53 +77,65 @@ Room.prototype.addSocket = function (socket) {
   if (hasSpace === false) {
     this.sockets[this.sockets.length] = socket;
   }
-  return this;
+  console.log('Added socket to room ' + this.id);
+  //console.log(socket);
+  //console.log(this);
 }
 
 Room.prototype.removeSocket = function(socket) {
-  reCalcCenter(-1, socket.latitude, socket.longitude);
+  var plusMinus = -1;
+  this.cenLat = (this.cenLat * this.numUsers  + socket.latitude * plusMinus) / (this.numUsers + plusMinus);
+  this.cenLong = (this.cenLong * this.numUsers  + socket.longitude * plusMinus) / (this.numUsers + plusMinus);
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.sockets.length; i++) {
-    if (this.sockets[i].clientId === socket.clientId) {
+    if (this.sockets[i] != null && this.sockets[i].clientId === socket.clientId) {
       this.sockets[i] = null;
     }
-    if (empty === false && this.sockets[i] != null) {
+    if (empty === true && this.sockets[i] != null) {
       empty = false;
     }
   }
   if (empty === true) {
     removeRoom(this.id);
   }
+  console.log('Removed socket from room ' + this.id);
+  //console.log(socket);
+  //console.log(this);
 }
 
 // Might as well convert this to a binary search tree sometime..
-function addRoom(roomName) {
+function addRoom(roomId) {
   var exists = false;
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].id === roomName) {
+    if (rooms[i].id === roomId) {
       exists = true;
     }
     if (rooms[i] === null && nullVal = -1) {
       nullVal = i;
     }
   }
+  var room = new Room(roomId);
   if (exists === false) {
     if (nullVal === -1) {
-      rooms[nullVal] = new Room(roomName);
+      rooms[nullVal] = room;
     } else {
-      rooms[rooms.length] = new Room(roomName);
+      rooms[rooms.length] = room;
     }
   }
+  console.log('Added a new room ' + roomId);
+  //console.log(room);
 }
 
 function removeRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i] != null && rooms[i].id === roomId) {
+      console.log('ALERT! Room ' + rooms[i].id + ' has been set to NULL!');
       rooms[i] = null;
     }
   }
+  console.log('Removed room ' + roomId);
 }
 
 // Calculates and returns the room closest to the given point.
@@ -150,6 +158,8 @@ function findNearestRoomLoc(latitude, longitude) {
     }
   }
   if (closestRoom != -1) {
+    console.log('Found nearby room ' + rooms[closestRoom].id);
+    //console.log(rooms[closestRoom]);
     return rooms[closestRoom];
   }
   var room = new Room((new Date()).getTime());
@@ -158,6 +168,8 @@ function findNearestRoomLoc(latitude, longitude) {
   } else {
     rooms[rooms.length] = room;
   }
+  console.log('Found no nearby room, so created one ' + room.id);
+  //console.log(room);
   return room;
 }
 
@@ -166,6 +178,8 @@ function getRoomFromId(roomId) {
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i] != null && rooms[i].id === roomId) {
+      console.log('Found this room from the following id: ' + roomId);
+      //console.log(rooms[i]);
       return rooms[i];
     }
     if (rooms[i] === null && nullVal === -1) {
@@ -178,26 +192,33 @@ function getRoomFromId(roomId) {
   } else {
     rooms[rooms.length] = room;
   }
+  console.log('Found no room corresponding to id ' + roomId + ' so created one.');
+  //console.log(room);
   return room;
 }
+
+
+
+
 
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
   function changeRooms(newRoom) {
     io.sockets.in(socket.roomId).emit('Delete user', socket.clientName, socket.clientId);
-    socket.room.removeSocket(this);
+    socket.room.removeSocket(socket);
     socket.leave(socket.roomId);
     socket.roomId = newRoom.id;
     socket.room = newRoom;
     console.log(newRoom);
     socket.join(socket.roomId);
-    newRoom.addSocket(this);
-    socket.emit('Change room', newRoom.id);
+    newRoom.addSocket(socket);
+    socket.emit('Join room', newRoom.id);
     socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIDs());
     socket.broadcast.to(socket.roomId).emit('Display new nearby user', socket.clientName, socket.clientId);
   }
 
-  function message(message) {
+  // Emits a message to everyone!
+  function messageAll(message) {
     io.sockets.in(socket.roomId).emit('announcement', message);
   }
 
@@ -225,6 +246,7 @@ io.sockets.on('connection', function (socket) {
     socket.roomId = roomId;
     socket.ip = roomId;
     socket.room = getRoomFromId(roomId);
+    socket.room.addSocket(socket);
     socket.join(socket.roomId);
   });
 
@@ -260,23 +282,52 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(socket.roomId).emit('Display new chat', chat, senderName);
   });
 
-  socket.on('Send loc info', function(latitude, longitude, accuracy) {
+  // Runs on connection, with location info
+  socket.on('Use loc info', function(name, id, latitude, longitude, accuracy, ip) {
     socket.latitude = latitude;
     socket.longitude = longitude;
     socket.accuracy = accuracy;
-    var room = findNearestRoomLoc(latitude, longitude).addSocket(socket);
-    if (room.id != socket.roomId) {
-      changeRooms(room);
-    }
+    socket.clientName = name;
+    socket.clientId = id;
+
+    var room = findNearestRoomLoc(latitude, longitude);
+    socket.roomId = room.id;
+    socket.ip = ip;
+    socket.room = room;
+    console.log('Joining room ' + room.id);
+    socket.room.addSocket(socket);
+    socket.join(socket.roomId);
+
+    socket.emit('Initialize room', socket.clientName, socket.room.name, getLobbyNames(), getLobbyIDs());
+    //socket.emit('Join room', socket.room.name);
+    //socket.emit('Display client', socket.clientName);
+    socket.broadcast.to(socket.roomId).emit('Display new nearby user', socket.clientName, socket.clientId);
+    //socket.emit('Display all lobby users', getLobbyNames(), getLobbyIDs());
   });
 
-  socket.on('Use roomId info', function() {
-    // No change (yet!)
+  // Runs on connection, without location info
+  socket.on('Use ip info', function(name, id, ip) {
+    socket.roomId = ip;
+    socket.ip = ip;
+    socket.clientName = name;
+    socket.clientId = id;
+
+    socket.room = getRoomFromId(ip);
+    socket.room.addSocket(socket);
+    socket.join(socket.roomId);
+    console.log('Joining room ' + ip);
+
+    socket.emit('Initialize room', socket.clientName, socket.room.name, getLobbyNames(), getLobbyIDs());
+    //socket.emit('Join room', socket.room.name);
+    //socket.emit('Display client', socket.clientName);
+    socket.broadcast.to(socket.roomId).emit('Display new nearby user', socket.clientName, socket.clientId);
+    //socket.emit('Display all lobby users', getLobbyNames(), getLobbyIDs());
   });
 
   socket.on('disconnect', function () {
-    socket.room.removeSocket(this);
-    console.log('Leaving room ' + socket.roomId);
+    if (socket.room != null)
+      socket.room.removeSocket(this);
+    console.log('Leaving room: ' + socket);
     socket.broadcast.to(socket.roomId).emit('Delete user', socket.clientName, socket.clientId);
     socket.room = null;
     socket.leave(socket.roomId);
