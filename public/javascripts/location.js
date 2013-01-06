@@ -3,7 +3,7 @@ socket.posLatitude = -1;
 socket.posLongitude = -1;
 socket.posAccuracy = -1;
 var desiredLocAccuracy = 50, // meters
-    positionTimeout = 10000, // time it takes 
+    positionTimeout = 5000, // time it takes to establish position
     geohashDigitAccuracy = 8;   // 6 = 610m, 7 = 76m, 8 = 19m
 
 function positionSuccess(position) {
