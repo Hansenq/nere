@@ -47,6 +47,9 @@ io.configure(function () {
 var rooms = [];
 
 // Misc Calculation Functions
+
+// Returns the distance between two latitudes and longitudes using the equirectangular and pythagorean approximation
+// takes in decimal lats and longs, returns distance between them in meters
 function calcDistance(x1, y1, x2, y2) {
   // http://www.movable-type.co.uk/scripts/latlong.html
   // Equirectangular approximation and pythagorean theorem
@@ -56,7 +59,7 @@ function calcDistance(x1, y1, x2, y2) {
   y2 = y2 / 180 * Math.PI;
   var x = (y2 - y1) * Math.cos((x1 + x2) / 2);
   var y = (x2 - x1);
-  return Math.sqrt(x * x + y * y) * 6378.1 * 0.001;   // change to meters
+  return Math.sqrt(x * x + y * y) * 6378.1 * 1000;   // change to meters
 }
 
 // Room class
