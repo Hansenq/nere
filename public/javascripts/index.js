@@ -58,10 +58,17 @@ if (username === -1) {
 // Initialize socket variables
 socket.clientName = username;
 socket.clientID = datetime;
-socket.roomId = ipAddress;
 username = null;
-socket.emit('Set client name and id', socket.clientName, socket.clientID);
-socket.emit('Get all lobby users');
+
+// Does the same as 'Display client', 'Display all lobby users', 'Join room'
+socket.on('Initialize room', function(name, roomName, lobbyNames, lobbyIDs) {
+  $('.self-block input').val(name);
+  for (var i=0; i<lobbyNames.length; i++){
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
+  }
+  socket.roomId = roomName;
+  message('You have joined the ' + roomName + ' room!', 'System');
+});
 
 // This updates the client's input box, and the input box only.
 socket.on('Display client', function (name) {
@@ -131,10 +138,10 @@ socket.on('Display new file', function (fpfile, senderName) {
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 });
 
-socket.on('Change room', function(id) {
-  socket.roomId = id;
+socket.on('Join room', function(roomName) {
+  socket.roomId = roomName;
   $('.posts-container').empty();
-  message('Your room has been changed to ' + id + '!', 'System');
+  message('You have joined the ' + roomName + ' room!', 'System');
 });
 
 socket.on('Display new chat', function (chat, senderName){
