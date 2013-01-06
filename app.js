@@ -39,8 +39,8 @@
 // Code for Heroku socket.io compatibility
 io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 3); 
-  io.set('close timeout', 6);
+  io.set("polling duration", 10); 
+  // io.set('close timeout', 6);
 });
 
 // 
