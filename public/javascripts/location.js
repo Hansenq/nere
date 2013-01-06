@@ -3,13 +3,18 @@ socket.posLatitude = -1;
 socket.posLongitude = -1;
 socket.posAccuracy = -1;
 var desiredLocAccuracy = 100; // meters
+var positionTimeout = 15000; // time to wait for location response before defaulting.
+var timedOut = false;
 
 function positionSuccess(position) {
-  socket.posLatitude = position.coords.latitude;
-  socket.posLongitude = position.coords.longitude;
-  socket.posAccuracy = position.coords.accuracy;
-  console.log('Accuracy: ' + position.coords.accuracy);
-  usePosition();
+  if (timedOut === false) {
+    timedOut = true;
+    socket.posLatitude = position.coords.latitude;
+    socket.posLongitude = position.coords.longitude;
+    socket.posAccuracy = position.coords.accuracy;
+    console.log('Accuracy: ' + position.coords.accuracy);
+    usePosition();
+  }
 }
 
 function positionError(error) {
@@ -44,5 +49,12 @@ if (navigator.geolocation) {
     {
       enableHighAccuracy: true
     }
-  );
+    );
 };
+
+setTimeout(function() {
+  if (timedOut === false) {
+    timedOut = true;
+    useIPAddr();
+  }
+}, positionTimeout);
