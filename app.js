@@ -158,7 +158,7 @@ function findNearestRoomLoc(latitude, longitude) {
       continue;
     }
     dist = calcDistance(latitude, longitude, room.cenLat, room.cenLong);
-    console.log('=============(' + latitude + ', ' + longitude + ') to (' + room.cenLat + ', ' + room.cenLong + ')===========' + dist);
+    console.log('Calculating Distances:=============(' + latitude + ', ' + longitude + ') to (' + room.cenLat + ', ' + room.cenLong + ')===========' + dist);
     if (dist < room.radius) {
       if (dist < closestDist) {
         closestDist = dist;
