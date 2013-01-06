@@ -2,14 +2,18 @@
 socket.posLatitude = -1;
 socket.posLongitude = -1;
 socket.posAccuracy = -1;
-var desiredLocAccuracy = 50, // meters
-    positionTimeout = 5000, // time it takes to establish position
-    geohashDigitAccuracy = 8;   // 6 = 610m, 7 = 76m, 8 = 19m
+var desiredLocAccuracy = 60; // meters
+var positionTimeout = 5000; // time it takes to establish position
 
 function positionSuccess(position) {
   socket.posLatitude = position.coords.latitude;
   socket.posLongitude = position.coords.longitude;
   socket.posAccuracy = position.coords.accuracy;
+  console.log('Accuracy: ' + position.coords.accuracy);
+  if (position.coords.accuracy < desiredLocAccuracy) {
+    navigator.geolocation.clearWatch(watchId);
+    usePosition();
+  }
 }
 
 function positionError(error) {
@@ -19,6 +23,7 @@ function positionError(error) {
     3: 'Request timeout'
   };
   console.log('Position error: ' + errors[error.code]);
+  navigator.geolocation.clearWatch(watchId); 
   useIPAddr();
 }
 
@@ -41,11 +46,8 @@ if (navigator.geolocation) {
       enableHighAccuracy: true
     }
   );
-  while (socket.posAccuracy != -1 && socket.posAccuracy < desiredLocAccuracy) {
-    navigator.geolocation.clearWatch(watchId);
-  }
-  setTimeout(function() {
-    navigator.geolocation.clearWatch(watchId);
-    usePosition();
-  }, positionTimeout);
+
+  /*setTimeout(function() {
+
+  }, positionTimeout);*/
 };
