@@ -171,7 +171,7 @@ $(document).ready(function() {
   // Enable file sender button
   // Check roomId in case user neither confirmed NOR denied location
   $('.file-sender').click(function(){
-    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
+    if (socket.roomId != null) {
       filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
         socket.emit('Send new file', fpfile, socket.clientName);
       });
