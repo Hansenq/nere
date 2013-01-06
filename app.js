@@ -87,7 +87,7 @@ Room.prototype.removeSocket = function(socket) {
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.sockets.length; i++) {
-    if (this.sockets[i].clientId === socket.clientId) {
+    if (this.sockets[i] != null && this.sockets[i].clientId === socket.clientId) {
       this.sockets[i] = null;
     }
     if (empty === false && this.sockets[i] != null) {
