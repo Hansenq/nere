@@ -181,11 +181,6 @@ function getRoomFromId(roomId) {
   return room;
 }
 
-
-
-
-
-
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
   function changeRooms(newRoom) {
