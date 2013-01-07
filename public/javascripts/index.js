@@ -170,7 +170,6 @@ socket.on('announcement', function (msg) {
 
 function dismissGSModal() {
   $('#gsModal').modal('hide');
-  console.log('dismissGSModal() called');  
   //$('#gsModal .modal-footer .btn span').prop('value', 'Close');
 }
 
