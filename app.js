@@ -344,12 +344,13 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
-    if (socket.room != null)
+    if (socket.room != null){
       socket.room.removeSocket(this);
-    console.log('Leaving room: ' + socket);
-    socket.broadcast.to(socket.roomId).emit('Delete user', socket.clientName, socket.clientId);
-    socket.room = null;
-    socket.leave(socket.roomId);
+      console.log('Leaving room: ' + socket);
+      socket.broadcast.to(socket.roomId).emit('Delete user', socket.clientName, socket.clientId);
+      socket.room = null;
+      socket.leave(socket.roomId);
+    }
   });
 });
 
