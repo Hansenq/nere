@@ -8,6 +8,7 @@ var answeredLocQues = false;
 
 function positionSuccess(position) {
   if (answeredLocQues === false) {
+    dismissGSModal();
     answeredLocQues = true;
     socket.posLatitude = position.coords.latitude;
     socket.posLongitude = position.coords.longitude;
@@ -25,6 +26,7 @@ function positionError(error) {
   };
   console.log('Position error: ' + errors[error.code]);
   if (answeredLocQues === false) {
+    dismissGSModal();
     answeredLocQues = true;
     useIPAddr();
   }
@@ -40,13 +42,9 @@ function usePosition() {
 function useIPAddr() {
   socket.emit('Use ip info', socket.clientName, socket.clientID, ipAddress);
   socket.roomId = ipAddress;
-  // 'Use ip info' does the same as the below two calls
-  //socket.emit('Set client name and id', socket.clientName, socket.clientID);
-  //socket.emit('Get all lobby users');
 }
 
 if (navigator.geolocation) {
-  dismissGSModal();
   navigator.geolocation.getCurrentPosition(
     positionSuccess, 
     positionError, 
@@ -55,10 +53,3 @@ if (navigator.geolocation) {
     }
     );
 };
-
-/*setTimeout(function() {
-  if (answeredLocQues === false) {
-    answeredLocQues = true;
-    useIPAddr();
-  }
-}, positionTimeout);*/

@@ -169,14 +169,13 @@ socket.on('announcement', function (msg) {
 // Other JQuery calls
 
 function dismissGSModal() {
-  //$('#gsModal').modal({backdrop: true});
   $('#gsModal').modal('hide');
+  console.log('dismissGSModal() called');  
   //$('#gsModal .modal-footer .btn span').prop('value', 'Close');
 }
 
 // Configuring Get Started modal
 $('#gsModal').modal({backdrop: 'static'});
-$('#gsModal .modal-footer .btn span').prop('value', 'Use IP Address Instead');
 $('#gsModal .modal-footer .btn').click(function() {
   if (answeredLocQues === false) { 
     answeredLocQues = true;
@@ -184,6 +183,7 @@ $('#gsModal .modal-footer .btn').click(function() {
     useIPAddr();
   }
 });
+
 
 
 $(document).ready(function() {
