@@ -57,6 +57,11 @@
   background-repeat: repeat-x;
 }
 
+.sidebar .users {
+  /* This div's height is set in layout.js. */
+  overflow-y: scroll;
+}
+
 .sidebar .user-block {
   border-bottom: 1px solid #aaaaaa;
   padding: 20px;
