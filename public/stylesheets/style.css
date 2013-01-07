@@ -59,7 +59,7 @@
 
 .sidebar .users {
   /* This div's height is set in layout.js. */
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .sidebar .user-block {
