@@ -4,11 +4,12 @@ socket.posLongitude = -1;
 socket.posAccuracy = -1;
 var desiredLocAccuracy = 70; // meters
 var positionTimeout = 15000; // time to wait for location response before defaulting.
-var answered = false;
+var answeredLocQues = false;
 
 function positionSuccess(position) {
-  if (answered === false) {
-    answered = true;
+  if (answeredLocQues === false) {
+    dismissGSModal();
+    answeredLocQues = true;
     socket.posLatitude = position.coords.latitude;
     socket.posLongitude = position.coords.longitude;
     socket.posAccuracy = position.coords.accuracy;
@@ -24,8 +25,9 @@ function positionError(error) {
     3: 'Request timeout'
   };
   console.log('Position error: ' + errors[error.code]);
-  if (answered === false) {
-    answered = true;
+  if (answeredLocQues === false) {
+    dismissGSModal();
+    answeredLocQues = true;
     useIPAddr();
   }
 }
@@ -40,9 +42,6 @@ function usePosition() {
 function useIPAddr() {
   socket.emit('Use ip info', socket.clientName, socket.clientID, ipAddress);
   socket.roomId = ipAddress;
-  // 'Use ip info' does the same as the below two calls
-  //socket.emit('Set client name and id', socket.clientName, socket.clientID);
-  //socket.emit('Get all lobby users');
 }
 
 if (navigator.geolocation) {
@@ -54,10 +53,3 @@ if (navigator.geolocation) {
     }
     );
 };
-
-setTimeout(function() {
-  if (answered === false) {
-    answered = true;
-    useIPAddr();
-  }
-}, positionTimeout);

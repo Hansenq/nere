@@ -115,28 +115,28 @@ socket.on('Delete user', function (name, id) {
 });
 
 socket.on('Display new file', function (fpfile, senderName) {
-  
+
   $('.posts-container').append(
     '<strong>System:</strong>&nbsp;&nbsp;' +
     'New file shared by <strong>' + senderName + '</strong>.' + 
     '<br><br>' +
     '<table class="table table-bordered">' +
-      '<tbody>' +
-        '<tr>' +
-          '<td><strong>Sender</strong></th>' +
-          '<td><strong>Filename</strong></th>' +
-          '<td><strong>Sharable Filepicker URL</strong></th>' +
-          '<td><strong>File Download</strong></th>' +
-        '</tr>' +
-        '<tr>' +
-          '<td>' + senderName + '</td>' +
-          '<td>' + fpfile.filename + '</td>' +
-          '<td>' + fpfile.url + '</td>' +
-          '<td><a class="btn btn-primary btn-block" href="' + fpfile.url + '" target="_blank">Download</a></th>' +
-        '</tr>' +
-      '</tbody>' +
+    '<tbody>' +
+    '<tr>' +
+    '<td><strong>Sender</strong></th>' +
+    '<td><strong>Filename</strong></th>' +
+    '<td><strong>Sharable Filepicker URL</strong></th>' +
+    '<td><strong>File Download</strong></th>' +
+    '</tr>' +
+    '<tr>' +
+    '<td>' + senderName + '</td>' +
+    '<td>' + fpfile.filename + '</td>' +
+    '<td>' + fpfile.url + '</td>' +
+    '<td><a class="btn btn-primary btn-block" href="' + fpfile.url + '" target="_blank">Download</a></th>' +
+    '</tr>' +
+    '</tbody>' +
     '</table>'
-  ); 
+    ); 
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 });
@@ -166,7 +166,29 @@ socket.on('announcement', function (msg) {
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 });
 
+// Other JQuery calls
+
+function dismissGSModal() {
+  $('#gsModal').modal('hide');
+  //$('#gsModal .modal-footer .btn span').prop('value', 'Close');
+}
+
+// Configuring Get Started modal
+$('#gsModal').modal({backdrop: 'static'});
+$('#gsModal .modal-footer .btn').click(function() {
+  if (answeredLocQues === false) { 
+    answeredLocQues = true;
+    dismissGSModal();
+    useIPAddr();
+  }
+});
+
+
+
 $(document).ready(function() {
+
+  // Shows Get Started page
+  $('#gsModal').modal('show');
 
   // Enable file sender button
   // Check roomId in case user neither confirmed NOR denied location
@@ -183,8 +205,8 @@ $(document).ready(function() {
     // Send chat when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
-        event.preventDefault();
-        socket.emit('Send new chat', $(this).val(), socket.clientName);
+      event.preventDefault();
+      socket.emit('Send new chat', $(this).val(), socket.clientName);
         // Clear client input
         $(this).val('').focus();
       }
