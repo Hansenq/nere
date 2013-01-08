@@ -190,6 +190,16 @@ $(document).ready(function() {
   // Shows Get Started page
   $('#gsModal').modal('show');
 
+  if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    positionSuccess, 
+    positionError, 
+    {
+      enableHighAccuracy: true
+    }
+    );
+  };
+
   // Enable file sender button
   // Check roomId in case user neither confirmed NOR denied location
   $('.file-sender').click(function(){

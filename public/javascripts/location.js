@@ -1,4 +1,3 @@
-
 socket.posLatitude = -1;
 socket.posLongitude = -1;
 socket.posAccuracy = -1;
@@ -43,13 +42,3 @@ function useIPAddr() {
   socket.emit('Use ip info', socket.clientName, socket.clientID, ipAddress);
   socket.roomId = ipAddress;
 }
-
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    positionSuccess, 
-    positionError, 
-    {
-      enableHighAccuracy: true
-    }
-    );
-};
