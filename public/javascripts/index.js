@@ -183,7 +183,11 @@ $('#gsModal .modal-footer .btn').click(function() {
   }
 });
 
-
+// Sanitizes user input before adding it to DOM
+// http://stackoverflow.com/questions/2794137/sanitizing-user-input-before-adding-it-to-the-dom-in-javascript
+function encodeHTML(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
 
 $(document).ready(function() {
 
@@ -216,7 +220,7 @@ $(document).ready(function() {
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
-      socket.emit('Send new chat', $(this).val(), socket.clientName);
+      socket.emit('Send new chat', encodeHTML($(this).val()), socket.clientName);
         // Clear client input
         $(this).val('').focus();
       }
