@@ -75,7 +75,7 @@ socket.on('Initialize room', function(name, roomName, lobbyNames, lobbyIDs) {
 
 // This updates the client's input box, and the input box only.
 socket.on('Display client', function (name) {
-  $('.self-block input').val(name);
+  $('.self-block input').val(decodeHTML(name));
 });
 
 socket.on('Display new nearby user', function (name, id) {
@@ -184,9 +184,11 @@ $('#gsModal .modal-footer .btn').click(function() {
 });
 
 // Sanitizes user input before adding it to DOM
-// http://stackoverflow.com/questions/2794137/sanitizing-user-input-before-adding-it-to-the-dom-in-javascript
 function encodeHTML(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+function decodeHTML(s) {
+    return s.replace('&amp;', '&').replace('&lt;', '<').replace('&quot;', '"');
 }
 
 $(document).ready(function() {
