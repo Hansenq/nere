@@ -64,7 +64,7 @@ message('nere first uses location to determine peers around you, and falls back 
 
 // Does the same as 'Display client', 'Display all lobby users', 'Join room'
 socket.on('Initialize room', function(name, roomName, lobbyNames, lobbyIDs) {
-  $('.self-block input').val(name);
+  $('.self-block input').val(decodeHTML(name));
   for (var i=0; i<lobbyNames.length; i++){
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
   }
@@ -184,11 +184,12 @@ $('#gsModal .modal-footer .btn').click(function() {
 });
 
 // Sanitizes user input before adding it to DOM
+// NOTE: This is not a 
 function encodeHTML(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 function decodeHTML(s) {
-    return s.replace('&amp;', '&').replace('&lt;', '<').replace('&quot;', '"');
+    return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
 }
 
 $(document).ready(function() {
