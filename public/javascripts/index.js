@@ -232,7 +232,7 @@ $(document).ready(function() {
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
-      var newName = $(this).val();
+      var newName = encodeHTML($(this).val());
       $(this).blur();
       var oldName = socket.clientName;
       var un = checkCookie();
