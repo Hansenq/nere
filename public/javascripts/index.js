@@ -186,10 +186,13 @@ $('#gsModal .modal-footer .btn').click(function() {
 // Sanitizes user input before adding it to DOM
 // NOTE: This is not a 
 function encodeHTML(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 function decodeHTML(s) {
+  if (typeof s === "string")
     return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+  else
+    return s;
 }
 
 $(document).ready(function() {
@@ -198,13 +201,13 @@ $(document).ready(function() {
   $('#gsModal').modal('show');
 
   if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    positionSuccess, 
-    positionError, 
-    {
-      enableHighAccuracy: true
-    }
-    );
+    navigator.geolocation.getCurrentPosition(
+      positionSuccess, 
+      positionError, 
+      {
+        enableHighAccuracy: true
+      }
+      );
   };
 
   // Enable file sender button

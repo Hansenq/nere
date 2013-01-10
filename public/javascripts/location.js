@@ -12,6 +12,7 @@ function positionSuccess(position) {
     socket.posLatitude = position.coords.latitude;
     socket.posLongitude = position.coords.longitude;
     socket.posAccuracy = position.coords.accuracy;
+    console.log('Location: ' + position.coords.latitude + ', ' + position.coords.longitude);
     console.log('Accuracy: ' + position.coords.accuracy);
     usePosition();
   }
@@ -40,5 +41,4 @@ function usePosition() {
 // Runs when location cannot be obtained.
 function useIPAddr() {
   socket.emit('Use ip info', socket.clientName, socket.clientID, ipAddress);
-  socket.roomId = ipAddress;
 }
