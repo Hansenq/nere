@@ -11,8 +11,6 @@ block content
             a#chat Chat
           li
             a(href='#aboutModal', data-toggle='modal') About
-          li
-            a(href='#contactModal', data-toggle='modal') Contact Us
 
   // "Get Started" Modal
   #gsModal.modal.hide.fade(tabindex='-1', role='dialog')
@@ -34,17 +32,6 @@ block content
     .modal-body
       p Nere is an web application that allows you to broadcast files and messages to devices physically nearby.
       p Built by Ray Zhou and Hansen Qian. We're a duo of Stanford and Princeton undergraduate freshmen who love hacking and social coding. Enjoy!
-    .modal-footer
-      button.btn(data-dismiss='modal') Close
-
-  // "Contact Us" Modal
-  #contactModal.modal.hide.fade(tabindex='-1', role='dialog')
-    .modal-header
-      button.close(type='button', data-dismiss='modal') ×
-      h3 Contact Us
-    .modal-body
-      p Questions? Comments? We'd love to hear from you!
-      p Shoot us an email at <a href='#'><strong>support@nere.com</strong></a>, and we'll get back to you when we can!
     .modal-footer
       button.btn(data-dismiss='modal') Close
 
