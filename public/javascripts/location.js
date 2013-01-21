@@ -14,7 +14,12 @@ function positionSuccess(position) {
     socket.posAccuracy = position.coords.accuracy;
     console.log('Location: ' + position.coords.latitude + ', ' + position.coords.longitude);
     console.log('Accuracy: ' + position.coords.accuracy);
-    usePosition();
+    if (socket.posAccuracy <= desiredLocAccuracy) {
+      usePosition();
+    } else {
+      useIPAddr();
+      console.log('Location was not accurate enough; used IP Address instead');
+    }
   }
 }
 

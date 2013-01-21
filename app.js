@@ -50,7 +50,7 @@ var rooms = [];
 
 // Returns the distance between two latitudes and longitudes using the equirectangular and pythagorean approximation
 // takes in decimal lats and longs, returns distance between them in meters
-function calcDistance(x1, y1, x2, y2) {
+function calcDistSq(x1, y1, x2, y2) {
   // http://www.movable-type.co.uk/scripts/latlong.html
   // Equirectangular approximation and pythagorean theorem
   x1 = x1 / 180 * Math.PI;
@@ -59,14 +59,14 @@ function calcDistance(x1, y1, x2, y2) {
   y2 = y2 / 180 * Math.PI;
   var x = (y2 - y1) * Math.cos((x1 + x2) / 2);
   var y = (x2 - x1);
-  return Math.sqrt(x * x + y * y) * 6378.1 * 1000;   // change to meters
+  return (x * x + y * y) * 40680159610000;   // change to meters 40680159610000 == (6378.1 * 1000)^2
 }
 
 // Room class
 function Room (id) {
   this.id = id;
   this.name = id;
-  this.radius = 70;     // default radius to 70m
+  this.radiusSq = 4900;     // default radiusSq to 70m
   this.numUsers = 0;
   this.cenLat = 0;
   this.cenLong = 0;
@@ -157,7 +157,7 @@ function removeRoom(roomId) {
 // Creates new room if point is far away from other rooms
 function findNearestRoomLoc(latitude, longitude) {
   var closestDist = 10000, closestRoom = -1, nullVal = -1;
-  var dist = 100000, room = null;
+  var distSq = 100000, room = null;
   for (var i = 0; i < rooms.length; i++) {
     room = rooms[i];
     if (room === null) {
@@ -167,18 +167,18 @@ function findNearestRoomLoc(latitude, longitude) {
     if (isNaN(room.cenLat) === true || isNaN(room.cenLong) === true) {
       continue;
     }
-    dist = calcDistance(latitude, longitude, room.cenLat, room.cenLong);
-    console.log('Calculating Distances:=============(' + latitude + ', ' + longitude + ') to (' + room.cenLat + ', ' + room.cenLong + ')===========' + dist);
-    if (dist < room.radius) {
-      if (dist < closestDist) {
-        closestDist = dist;
+    distSq = calcDistSq(latitude, longitude, room.cenLat, room.cenLong);
+    console.log('Calculating Distances:=============(' + latitude + ', ' + longitude + ') to 
+      (' + room.cenLat + ', ' + room.cenLong + ')===========Distance Squared: ' + distSq);
+    if (distSq < room.radiusSq) {
+      if (distSq < closestDist) {
+        closestDist = distSq;
         closestRoom = i;
       }
     }
   }
   if (closestRoom != -1) {
     console.log('Found nearby room ' + rooms[closestRoom].id);
-    //console.log(rooms[closestRoom]);
     return rooms[closestRoom];
   }
   var room = new Room((new Date()).getTime());
@@ -188,7 +188,6 @@ function findNearestRoomLoc(latitude, longitude) {
     rooms[rooms.length] = room;
   }
   console.log('Found no nearby room, so created one ' + room.id);
-  //console.log(room);
   return room;
 }
 
