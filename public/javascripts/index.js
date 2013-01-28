@@ -211,7 +211,7 @@ $(document).ready(function() {
   $('#gsModal').modal('show');
 
   if (navigator.geolocation) {
-    $('#gsModal .modal-body').val('Please wait...');
+    $('#gsModal .modal-body').html('Please wait...');
     navigator.geolocation.getCurrentPosition(
       positionSuccess, 
       positionError, 
