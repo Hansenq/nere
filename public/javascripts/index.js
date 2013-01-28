@@ -219,7 +219,7 @@ $(document).ready(function() {
         enableHighAccuracy: true, 
         timeout: 10000
       }
-      );
+    ); 
   };
 
   // Enable file sender button
