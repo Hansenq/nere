@@ -23,3 +23,17 @@ If the client specifically denies us the right to use location data, we have no 
 
 Other thoughts:
 Client should never see anything about a room except for the roomId; otherwise we risk leaking personal information!
+
+
+          li
+            a(href='#roomsModal', data-toggle='modal') Rooms
+
+//#roomsModal.modal.hide.fade(tabindex="-1", role='dialog')
+    .modal-header
+      button.close(type='button', data-dismiss='modal') ×
+      h3 Custom Rooms nere You
+    .modal-body
+      p Want to switch to a custom room? Select one from the list below, or create a new private room!
+      .rooms
+    .modal-footer
+      button.btn(data-dismiss='modal') Close
