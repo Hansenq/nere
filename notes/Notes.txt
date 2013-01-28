@@ -1,14 +1,12 @@
 index.js/location.js:
-Variables located in socket: clientName, clientId, roomId, roomName, position
+Variables located in socket: clientName, clientId, roomId, roomName, coords
 
 app.js:
-Variables in socket: room, ip, clientName, clientId, position
+Variables in socket: room, ip, clientName, clientId, coords {latitude, longitude, accuracy}
 Get room id/name by socket.room.id/name
-Get locations by position.coords.
+Get locations by socket.coords.
 
 When things are updating, only update the client's properties when directed from server, not from the user!
-
-
 
 
 
@@ -25,3 +23,17 @@ If the client specifically denies us the right to use location data, we have no 
 
 Other thoughts:
 Client should never see anything about a room except for the roomId; otherwise we risk leaking personal information!
+
+
+          li
+            a(href='#roomsModal', data-toggle='modal') Rooms
+
+//#roomsModal.modal.hide.fade(tabindex="-1", role='dialog')
+    .modal-header
+      button.close(type='button', data-dismiss='modal') ×
+      h3 Custom Rooms nere You
+    .modal-body
+      p Want to switch to a custom room? Select one from the list below, or create a new private room!
+      .rooms
+    .modal-footer
+      button.btn(data-dismiss='modal') Close

@@ -6,11 +6,15 @@ function positionSuccess(position) {
   if (answeredLocQues === false) {
     dismissGSModal();
     answeredLocQues = true;
-    socket.position = position;
-    console.log('Location: ' + position.coords.latitude + ', ' + position.coords.longitude);
-    console.log('Accuracy: ' + position.coords.accuracy);
-    if (position.coords.accuracy <= desiredLocAccuracy) {
-      usePosition();
+    socket.coords = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      accuracy: position.coords.accuracy,
+    }
+    message('Location: ' + socket.coords.latitude + ', ' + socket.coords.longitude);
+    message('Accuracy: ' + socket.coords.accuracy);
+    if (socket.coords.accuracy <= desiredLocAccuracy) {
+      socket.emit('Use loc info', socket.clientName, socket.clientId, socket.coords, ipAddress);
     } else {
       useIPAddr();
       console.log('Location was not accurate enough; used IP Address instead');
@@ -29,12 +33,6 @@ function positionError(error) {
     dismissGSModal();
     answeredLocQues = true;
     useIPAddr();
-  }
-}
-
-function usePosition() {
-  if (socket.position != null) {
-    socket.emit('Use loc info', socket.clientName, socket.clientId, socket.position, ipAddress);
   }
 }
 

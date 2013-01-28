@@ -74,10 +74,10 @@ function Room (id) {
 }
 
 Room.prototype.addSocket = function (socket) {
-  if (isNaN(socket.position.coords.latitude) === false && isNaN(socket.position.coords.longitude) === false) {
+  if (socket.coords != null && isNaN(socket.coords.latitude) === false && isNaN(socket.coords.longitude) === false) {
     var plusMinus = 1;
-    this.cenLat = (this.cenLat * this.numUsers  + socket.position.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
-    this.cenLong = (this.cenLong * this.numUsers  + socket.position.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
+    this.cenLat = (this.cenLat * this.numUsers  + socket.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
+    this.cenLong = (this.cenLong * this.numUsers  + socket.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
   }
   this.numUsers++;
   var hasSpace = false;
@@ -96,10 +96,10 @@ Room.prototype.addSocket = function (socket) {
 }
 
 Room.prototype.removeSocket = function(socket) {
-  if (isNaN(socket.position.coords.latitude) === false && isNaN(socket.position.coords.longitude) === false) {
+  if (socket.coords != null && isNaN(socket.coords.latitude) === false && isNaN(socket.coords.longitude) === false) {
     var plusMinus = -1;
-    this.cenLat = (this.cenLat * this.numUsers  + socket.position.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
-    this.cenLong = (this.cenLong * this.numUsers  + socket.position.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
+    this.cenLat = (this.cenLat * this.numUsers  + socket.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
+    this.cenLong = (this.cenLong * this.numUsers  + socket.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
   }
   this.numUsers--;
   var empty = true;
@@ -291,12 +291,12 @@ io.sockets.on('connection', function (socket) {
   });
 
   // Runs on connection, with location info
-  socket.on('Use loc info', function(name, id, position, ip) {
-    socket.position = position;
+  socket.on('Use loc info', function(name, id, coords, ip) {
+    socket.coords = coords;
     socket.clientName = name;
     socket.clientId = id;
 
-    var room = findNearestRoomLoc(position.coords.latitude, position.coords.longitude);
+    var room = findNearestRoomLoc(socket.coords.latitude, socket.coords.longitude);
     socket.ip = ip;
     socket.room = room;
     console.log('Joining room ' + room.id);
@@ -312,7 +312,7 @@ io.sockets.on('connection', function (socket) {
 
   // Runs on connection, without location info
   socket.on('Use ip info', function(name, id, ip) {
-    socket.position = null;
+    socket.coords = null;
     socket.ip = ip;
     socket.clientName = name;
     socket.clientId = id;
