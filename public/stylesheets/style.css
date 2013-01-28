@@ -44,6 +44,17 @@
   width: 180px;
 }
 
+.sidebar .room-block{
+  border-bottom: 3px solid #333333;
+  padding: 20px;
+  background-color: #f7f7f7;
+}
+
+.room-block input{
+  margin: 0;
+  width: 165px;
+}
+
 .sidebar .title-block {
   border-bottom: 1px solid #aaaaaa;
   padding: 5px 0px 5px 75px;

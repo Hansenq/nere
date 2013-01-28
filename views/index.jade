@@ -13,16 +13,23 @@ block content
             a(href='#aboutModal', data-toggle='modal') About
 
   // "Get Started" Modal
-  #gsModal.modal.hide.fade(tabindex='-1', role='dialog')
+  #gsModal.hide.modal.fade(tabindex='-1', role='dialog')
     .modal-header
       h3 Get Started with nere
     .modal-body
       p Chat with people around you, literally.
-      p nere uses location data and your ip address to create chat rooms of people around you.
+      p nere uses location data or your ip address to create chat rooms of people around you.
       p Click 'Allow' to begin!
       img(src='/images/locPrompt_chrome.png')
     .modal-footer
       button.btn Use IP Address Instead
+
+  // "Rooms" Modal
+  #roomsModal.modal.fade(tabindex="-1", role='dialog')
+    .modal-header
+      button.close(type='button', data-dismiss='modal') ×
+      h3 Rooms nere You
+    
 
   // "About" Modal
   #aboutModal.modal.hide.fade(tabindex='-1', role='dialog')
@@ -30,7 +37,7 @@ block content
       button.close(type='button', data-dismiss='modal') ×
       h3 About
     .modal-body
-      p Nere is an web application that allows you to broadcast files and messages to devices physically nearby.
+      p Nere is an web application that allows you to broadcast files and messages to devices physically nearby. 
       p Built by Ray Zhou and Hansen Qian. We're a duo of Stanford and Princeton undergraduate freshmen who love hacking and social coding. Enjoy!
     .modal-footer
       button.btn(data-dismiss='modal') Close
@@ -43,6 +50,10 @@ block content
   .sidebar
     .self-block
       strong You:
+      &nbsp;&nbsp;
+      input(type='text', value='')
+    .room-block
+      strong Room:
       &nbsp;&nbsp;
       input(type='text', value='')
     .file-sender
@@ -68,4 +79,3 @@ block footerJs
   script
     var socket = io.connect(window.location.hostname);
     var ipAddress = !{JSON.stringify(ipaddress)}
-    //socket.emit('Join room with ip', ipAddress);
