@@ -1,6 +1,3 @@
-socket.posLatitude = -1;
-socket.posLongitude = -1;
-socket.posAccuracy = -1;
 var desiredLocAccuracy = 70; // meters
 var positionTimeout = 15000; // time to wait for location response before defaulting.
 var answeredLocQues = false;
@@ -9,12 +6,10 @@ function positionSuccess(position) {
   if (answeredLocQues === false) {
     dismissGSModal();
     answeredLocQues = true;
-    socket.posLatitude = position.coords.latitude;
-    socket.posLongitude = position.coords.longitude;
-    socket.posAccuracy = position.coords.accuracy;
+    socket.position = position;
     console.log('Location: ' + position.coords.latitude + ', ' + position.coords.longitude);
     console.log('Accuracy: ' + position.coords.accuracy);
-    if (socket.posAccuracy <= desiredLocAccuracy) {
+    if (position.coords.accuracy <= desiredLocAccuracy) {
       usePosition();
     } else {
       useIPAddr();
@@ -38,12 +33,12 @@ function positionError(error) {
 }
 
 function usePosition() {
-  if (socket.posLatitude != -1 && socket.posLongitude != -1) {
-    socket.emit('Use loc info', socket.clientName, socket.clientID, socket.posLatitude, socket.posLongitude, socket.posAccuracy, ipAddress);
+  if (socket.position != null) {
+    socket.emit('Use loc info', socket.clientName, socket.clientId, socket.position, ipAddress);
   }
 }
 
 // Runs when location cannot be obtained.
 function useIPAddr() {
-  socket.emit('Use ip info', socket.clientName, socket.clientID, ipAddress);
+  socket.emit('Use ip info', socket.clientName, socket.clientId, ipAddress);
 }
