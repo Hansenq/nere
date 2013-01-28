@@ -15,7 +15,7 @@ block content
             a(href='#contactModal', data-toggle='modal') Contact Us
 
   // "Get Started" Modal
-  #gsModal.modal.hide.fade(tabindex='-1', role='dialog')
+  #gsModal.hide.modal.fade(tabindex='-1', role='dialog')
     .modal-header
       h3 Get Started with nere
     .modal-body
@@ -25,6 +25,13 @@ block content
       img(src='/images/locPrompt_chrome.png')
     .modal-footer
       button.btn Use IP Address Instead
+
+  // "Rooms" Modal
+  #roomsModal.modal.fade(tabindex="-1", role='dialog')
+    .modal-header
+      button.close(type='button', data-dismiss='modal') ×
+      h3 Rooms nere You
+    
 
   // "About" Modal
   #aboutModal.modal.hide.fade(tabindex='-1', role='dialog')
@@ -85,4 +92,3 @@ block footerJs
   script
     var socket = io.connect(window.location.hostname);
     var ipAddress = !{JSON.stringify(ipaddress)}
-    //socket.emit('Join room with ip', ipAddress);

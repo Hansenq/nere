@@ -36,16 +36,16 @@ function checkCookie(c_name)
 }
 
 function message(chat, senderName) {
+  if (senderName == "" || senderName == null) {
+    senderName = 'System';
+  }
   $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;' + chat + '<br>'); 
-  
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 }
 
-function changeRooms(roomId) {
-  socket.emit('Change rooms', roomId);
-  message('Leaving room...', 'System');
-  socket.roomId = roomId;
+function trim(str) {
+
 }
 
 // Begin using socket.io
@@ -55,32 +55,46 @@ if (username === -1) {
   username = datetime;
 }
 
+/*
+  Variables in socket:
+  clientName, clientId, roomId, roomName, 
+*/
+
 // Initialize socket variables
 socket.clientName = username;
-socket.clientID = datetime;
+socket.clientId = datetime;
 username = null;
 message('Please allow location services for the best experience!', 'System');
 message('nere first uses location to determine peers around you, and falls back on IP address if that\'s unavailable!', 'System');
 
 // Does the same as 'Display client', 'Display all lobby users', 'Join room'
-socket.on('Initialize room', function(name, roomName, lobbyNames, lobbyIDs) {
+socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyIDs) {
   $('.self-block input').val(decodeHTML(name));
+  $('.room-block input').val(decodeHTML(roomName));
   for (var i=0; i<lobbyNames.length; i++){
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
   }
-  socket.roomId = roomName;
+  socket.roomId = roomId;
+  socket.roomName = roomName;
   $('.posts-container').empty();
-  message('You have joined the ' + roomName + ' room!', 'System');
+  message('You have joined the ' + roomName + ' room!');
 });
 
 // This updates the client's input box, and the input box only.
-socket.on('Display client', function (name) {
+socket.on('Update client name', function (name) {
+  socket.clientName = name;
   $('.self-block input').val(decodeHTML(name));
 });
 
-socket.on('Display new nearby user', function (name, id) {
-  $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong></div>');
-  message(name + ' connected.', 'System');
+socket.on('Update room name', function(roomName, clientName) {
+  socket.roomName = roomName;
+  $('.room-block input').val(decodeHTML(roomName));
+  message(clientName + ' has changed the room name to ' + decodeHTML(roomName) + '!');
+});
+
+socket.on('Display new nearby user', function (clientName, clientId) {
+  $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + clientName + '</strong></div>');
+  message(clientName + ' connected.');
 });
 
 socket.on('Refresh all lobby users', function (lobbyNames, lobbyIDs) {
@@ -96,13 +110,13 @@ socket.on('Display all lobby users', function (lobbyNames, lobbyIDs) {
   }
 });
 
-socket.on('Change nearby name', function(newName, oldName, id) {
+socket.on('Change nearby client name', function(newName, oldName, clientId) {
   $('.user-block').each(function(){
-    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + oldName + '</strong>'){
-      $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + newName + '</strong>');
+    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + oldName + '</strong>'){
+      $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + newName + '</strong>');
     }
   });
-  message(oldName + ' changed his/her name to ' + newName, 'System');
+  message(oldName + ' changed his/her name to ' + newName);
 });
 
 socket.on('Delete user', function (name, id) {
@@ -111,7 +125,7 @@ socket.on('Delete user', function (name, id) {
       $(this).remove();
     }
   });
-  message(name + ' disconnected a minute ago.', 'System');
+  message(name + ' disconnected a minute ago.');
 });
 
 socket.on('Display new file', function (fpfile, senderName) {
@@ -141,8 +155,9 @@ socket.on('Display new file', function (fpfile, senderName) {
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 });
 
-socket.on('Join room', function(roomName) {
-  socket.roomId = roomName;
+socket.on('Join room', function(roomName, roomId) {
+  socket.roomId = roomId;
+  socket.roomName = roomName;
   $('.posts-container').empty();
   message('You\'ve joined the ' + roomName + ' room!', 'System');
 });
@@ -238,12 +253,12 @@ $(document).ready(function() {
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
-      var newName = encodeHTML($(this).val());
+      var newName = encodeHTML($(this).val().trim());
       $(this).blur();
-      var oldName = socket.clientName;
       var un = checkCookie();
-      if (newName === '' || newName === null || newName === un){
+      if (newName === '' || newName === null || newName === socket.clientName){
         console.log('New name is empty or null or unchanged!');
+        message('You didn\'t change your name!');
         return;
       }
       if (un != -1) {
@@ -251,8 +266,21 @@ $(document).ready(function() {
         setCookie('username', '', -1);
       }
       setCookie('username', newName, 1);
-      socket.emit('Change client name', newName, oldName, socket.clientID);
-      socket.clientName = newName;
+      socket.emit('Change client name', newName, socket.clientName, socket.clientId);
+    }
+  });
+
+  $('.sidebar .room-block input').keypress(function(event) {
+    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
+      event.preventDefault();
+      var newRoomName = encodeHTML($(this).val().trim());
+      $(this).blur();
+      if (newRoomName === '' || newRoomName === null || newRoomName === socket.roomName) {
+        console.log('New name is empty, null, or unchanged!');
+        message('You didn\'t change the room name!');
+        return;
+      }
+      socket.emit('Change room name', newRoomName, socket.clientName);
     }
   });
 
