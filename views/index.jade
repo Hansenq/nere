@@ -10,25 +10,32 @@ block content
           li.active
             a#chat Chat
           li
+            a(href='#roomsModal', data-toggle='modal') Rooms
+          li
             a(href='#aboutModal', data-toggle='modal') About
 
   // "Get Started" Modal
-  #gsModal.hide.modal.fade(tabindex='-1', role='dialog')
+  #gsModal.modal.hide.fade(tabindex='-1', role='dialog')
     .modal-header
       h3 Get Started with nere
     .modal-body
       p Chat with people around you, literally.
       p nere uses location data or your ip address to create chat rooms of people around you.
-      p Click 'Allow' to begin!
+      p Click 'Allow' to begin! 
       img(src='/images/locPrompt_chrome.png')
     .modal-footer
       button.btn Use IP Address Instead
 
   // "Rooms" Modal
-  #roomsModal.modal.fade(tabindex="-1", role='dialog')
+  //#roomsModal.modal.hide.fade(tabindex="-1", role='dialog')
     .modal-header
       button.close(type='button', data-dismiss='modal') ×
-      h3 Rooms nere You
+      h3 Custom Rooms nere You
+    .modal-body
+      p Want to switch to a custom room? Select one from the list below, or create a new private room!
+      .rooms
+    .modal-footer
+      button.btn(data-dismiss='modal') Close
     
 
   // "About" Modal

@@ -1,14 +1,12 @@
 index.js/location.js:
-Variables located in socket: clientName, clientId, roomId, roomName, position
+Variables located in socket: clientName, clientId, roomId, roomName, coords
 
 app.js:
-Variables in socket: room, ip, clientName, clientId, position
+Variables in socket: room, ip, clientName, clientId, coords {latitude, longitude, accuracy}
 Get room id/name by socket.room.id/name
-Get locations by position.coords.
+Get locations by socket.coords.
 
 When things are updating, only update the client's properties when directed from server, not from the user!
-
-
 
 
 
