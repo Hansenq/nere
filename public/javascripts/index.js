@@ -199,7 +199,6 @@ $('#gsModal .modal-footer .btn').click(function() {
 });
 
 // Sanitizes user input before adding it to DOM
-// NOTE: This is not a 
 function encodeHTML(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
