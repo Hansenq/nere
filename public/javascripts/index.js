@@ -222,7 +222,7 @@ $(document).ready(function() {
       {
         enableHighAccuracy: true
       }
-      );
+    ); 
   };
 
   // Enable file sender button
