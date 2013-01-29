@@ -217,17 +217,17 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
       html += ' active';
     }
     html += '" id="tab' + count + '">'
-    + '<p class="lead">' + roomNames[i] + '</p><br>'
+    + '<p class="lead">' + roomNames[i] + '</p>'
     + '<dl><dt>Description</dt><dd>' + roomDescs[i] + '</dd></dl>'
-    + '<div class="row-fluid"><div class="span2 offset9"><button id="' + roomIds[i] + '" class="btn btn-primary">Switch room!</button></div></div>'
+    + '<div class="row-fluid"><div class="span4 offset8"><button id="' + roomIds[i] + '" class="btn btn-primary">Switch room!</button></div></div>'
     + '</div>';
   }
   count++;
   html += '<div class="tab-pane" id="tab' + count + '">'
-  + '<form><fieldset><legend>Create a room!</legend>'
-  + '<label>Room Name:</label><input type="text" id="title" placeholder="Title">'
-  + '<label>Room Description:</label><textarea id="description" rows="5" placeholder="Description"></textarea>'
-  + '<div class="row-fluid"><div class="span2 offset9"><button type="submit" class="btn btn-primary">Create Room!</button></div></div>'
+  + '<form><fieldset><p class="lead">Create a room!</p>'
+  + '<label>Name:</label><input type="text" id="title" placeholder="Title">'
+  + '<label>Description:</label><textarea id="description" rows="5" placeholder="Description"></textarea>'
+  + '<div class="row-fluid"><div class="span4 offset8"><button class="btn btn-primary">Create Room!</button></div></div>'
   + '</fieldset></form>'
   + '</div>'
   + '</div>'

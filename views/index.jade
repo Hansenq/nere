@@ -61,6 +61,10 @@ block content
       strong You:
       &nbsp;&nbsp;
       input(type='text', value='')
+    .room-block
+      strong Room:
+      &nbsp;&nbsp;
+      input(type='text', value='')
     .file-sender
       button.btn.btn-primary.btn-large.btn-block Share New File
     .title-block
@@ -84,4 +88,3 @@ block footerJs
   script
     var socket = io.connect(window.location.hostname);
     var ipAddress = !{JSON.stringify(ipaddress)}
-    //socket.emit('Join room with ip', ipAddress);
