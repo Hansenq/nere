@@ -4,7 +4,7 @@ var answeredLocQues = false;
 
 function positionSuccess(position) {
   if (answeredLocQues === false) {
-    dismissGSModal();
+    changeGSToLoading();
     answeredLocQues = true;
     socket.coords = {
       latitude: position.coords.latitude,
@@ -30,7 +30,7 @@ function positionError(error) {
   };
   console.log('Position error: ' + errors[error.code]);
   if (answeredLocQues === false) {
-    dismissGSModal();
+    changeGSToLoading();
     answeredLocQues = true;
     useIPAddr();
   }

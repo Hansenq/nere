@@ -44,6 +44,12 @@ function message(chat, senderName) {
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 }
 
+function messageAlert(message, alertClass) {
+  $('.posts-container').append('<div class ="' + alertClass + '"><strong>System</strong>:&nbsp;&nbsp;' + message + '</div><br>'); 
+  // Lock scrollbar to bottom on send.
+  $('.main').scrollTop($('.main').prop('scrollHeight'));
+}
+
 // Sanitizes user input before adding it to DOM
 // NOTE: This is not a _____?
 function encodeHTML(s) {
@@ -66,7 +72,7 @@ if (username === -1) {
 /*
   Variables in socket:
   clientName, clientId, roomId, roomName, 
-*/
+  */
 
 // Initialize socket variables
 socket.clientName = username;
@@ -77,6 +83,7 @@ message('nere first uses location to determine peers around you, and falls back 
 
 // Does the same as 'Display client', 'Display all lobby users', 'Join room'
 socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyIDs) {
+  dismissGSModal();
   $('.self-block input').val(decodeHTML(name));
   $('.room-block input').val(decodeHTML(roomName));
   for (var i=0; i<lobbyNames.length; i++){
@@ -174,15 +181,71 @@ socket.on('Display new chat', function (chat, senderName){
   message(chat, senderName);
 });
 
+// Deals with changing rooms
+// Replace with a linked list!
+socket.on('Display nearby rooms', function(roomNames, roomIds, roomDescs) {
+  // Given Room name, room id, room description, 
+  // Displays current room first, then other rooms by increasing distance
+  if (roomNames.length == 0 || roomIds.length == 0 || roomDescs.length == 0 || roomNames.length === roomIds.length || roomIds.length === roomDescs.length || roomNames.length || roomDescs.length) {
+    return;
+  }
+  var count = 1;
+  var html = '<div class="tabbable tabs-left">'
+  + '<ul class="nav nav-tabs">'
+  + '<li class="active"><a href="#tab' + count + '" data-toggle="tab">' + roomNames[0] + '</a></li>';
+  for (var i = 1; i < roomNames.length; i++) {
+    count = i + 1;
+    html += '<li><a href="#tab' + count + '" data-toggle="tab">' + roomNames[i] + '</a></li>';
+  }
+  count++;
+  html += '<li><a href="#tab' + count + '" data-toggle="tab">Create a room!</a></li>';
+  + '</ul>'
+  + '<div class="tab-content">'
+  + '<div class="tab-pane active" id="tab1">'
+  + '<p class="lead">' + roomNames[0] + '</p><br>'
+  + '<dl><dt>Description</dt><dd>' + roomDescs[0] + '</dd></dl>'
+  + '<div class="row-fluid"><div class="span2 offset9"><button id="' + roomIds[0] + '" class="btn btn-primary">Switch room!</button></div></div>'
+  + '</div>';
+  for (i = 1; i < roomDescs.length; i++) {
+    count = i + 1;
+    html += '<div class="tab-pane" id="tab' + count + '">'
+    + '<p class="lead">' + roomNames[i] + '</p><br>'
+    + '<dl><dt>Description</dt><dd>' + roomDescs[i] + '</dd></dl>'
+    + '<div class="row-fluid"><div class="span2 offset9"><button id="' + roomIds[i] + '" class="btn btn-primary">Switch room!</button></div></div>'
+    + '</div>';
+  }
+  count++;
+  html += '<div class="tab-pane" id="tab' + count + '">'
+  + '<form><fieldset><legend>Create a room!</legend>'
+  + '<label>Room Name:</label><input type="text" id="title" placeholder="Title">'
+  + '<label>Room Description:</label><textarea id="description" rows="5" placeholder="Description"></textarea>'
+  + '<div class="row-fluid"><div class="span2 offset9"><button type="submit" class="btn btn-primary">Create Room!</button></div></div>'
+  + '</fieldset></form>'
+  + '</div>'
+  + '</div>'
+  + '</div>';
+  $('#roomsModal .modal-body .rooms').html(html);
+});
+
+
+
 // System Messages for chat!
+var shownError = false;
+
 socket.on('reconnected', function() {
   message('Reconnected to server.', 'System');
 });
 socket.on('reconnecting', function() {
-  message('Reconnecting to server...', 'System');
+  if (!shownError) {
+    messageAlert('Uh oh, we\'re reconnecting to the server. Try refreshing the page!', 'alert alert-error system-message');
+    shownError = true;
+  }
 });
 socket.on('error', function(e) {
-  message(e ? e : 'An unknown error occurred.', 'System');
+  if (!shownError) {
+    messageAlert(e ? e : 'An unknown error occurred. Try refreshing the page!', 'alert alert-error system-message');
+    shownError = true;
+  }
 });
 socket.on('announcement', function (msg) {
   $('.posts-container').append($('<p>').append($('<em>').text(msg)));
@@ -193,6 +256,10 @@ socket.on('announcement', function (msg) {
 
 function dismissGSModal() {
   $('#gsModal').modal('hide');
+}
+
+function changeGSToLoading() {
+  $('#gsModal .modal-body').html('<div class="img-center"><img src="/images/loading.gif" class="center" /></div><br><p style="text-align: center">Please wait...</p>');
 }
 
 // Configuring Get Started modal
@@ -211,7 +278,6 @@ $(document).ready(function() {
   $('#gsModal').modal('show');
 
   if (navigator.geolocation) {
-    $('#gsModal .modal-body').html('Please wait...');
     navigator.geolocation.getCurrentPosition(
       positionSuccess, 
       positionError, 
@@ -219,7 +285,7 @@ $(document).ready(function() {
         enableHighAccuracy: true, 
         timeout: 10000
       }
-    ); 
+      ); 
   };
 
   // Enable file sender button
@@ -279,6 +345,10 @@ $(document).ready(function() {
       }
       socket.emit('Change room name', newRoomName, socket.clientName);
     }
+  });
+
+  $('.navbar .nav #nav-rooms').click(function() {
+    socket.emit('Get nearby rooms');
   });
 
   // Default focus to .messenger input

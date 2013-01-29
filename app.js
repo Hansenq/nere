@@ -66,6 +66,7 @@ function calcDistSq(x1, y1, x2, y2) {
 function Room (id) {
   this.id = id;
   this.name = id;
+  this.description = 'Default Room';
   this.radiusSq = 4900;     // default radiusSq to 70m
   this.numUsers = 0;
   this.cenLat = 0;
@@ -269,6 +270,10 @@ io.sockets.on('connection', function (socket) {
   socket.on('Change room name', function(newRoomName, clientName) {
     socket.room.name = newRoomName;
     io.sockets.in(socket.room.id).emit('Update room name', newRoomName, clientName)
+  });
+
+  socket.on('Get nearby rooms', function() {
+    var root = socket.room;
   });
 
   // For future use
