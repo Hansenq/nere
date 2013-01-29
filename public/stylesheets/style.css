@@ -2,6 +2,16 @@
   width: 90%;
 }
 
+.img-center {
+  text-align: center;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px;
+}
+
+/*#roomsModal .rooms
+*/
+
 .infobar {
   position: fixed;
   height: 35px;
@@ -173,6 +183,11 @@
   left: 0;
   background-color: #f0f0f0;
   z-index: -1;
+}
+
+.system-message {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .messenger .chat-sender{

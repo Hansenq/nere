@@ -10,6 +10,8 @@ block content
           li.active
             a#chat Chat
           li
+            a(href='#roomsModal', data-toggle='modal')#nav-rooms Rooms
+          li
             a(href='#aboutModal', data-toggle='modal') About
 
   // "Get Started" Modal
@@ -24,6 +26,20 @@ block content
     .modal-footer
       button.btn Use IP Address Instead
 
+  // "Rooms" Modal
+  #roomsModal.modal.hide.fade(tabindex="-1", role='dialog')
+    .modal-header
+      button.close(type='button', data-dismiss='modal') ×
+      h3 Custom Rooms nere You
+    .modal-body
+      p Want to switch to a custom room? Select one from the list below, or create a new private room!
+      .rooms.tabbable.tabs-left
+        .img-center
+          img(src='/images/loading.gif')
+        p(style='text-align: center') Please wait...
+    .modal-footer
+      button.btn(data-dismiss='modal') Close
+    
   // "About" Modal
   #aboutModal.modal.hide.fade(tabindex='-1', role='dialog')
     .modal-header
@@ -37,7 +53,7 @@ block content
 
   // Infobar
   .infobar
-    strong(style='float: right;') Lobby #{ipaddress}
+    strong(style='float: right;')#text-infobar
 
   // Sidebar (client name, file sender, & nearby users)
   .sidebar
