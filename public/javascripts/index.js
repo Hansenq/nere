@@ -191,29 +191,32 @@ socket.on('Display new chat', function (chat, senderName){
 socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
   // Given Room name, room id, room description, 
   // Displays current room first, then other rooms by increasing distance
-  if (roomNames.length == 0 || roomIds.length == 0 || roomDescs.length == 0 || roomNames.length === roomIds.length || roomIds.length === roomDescs.length || roomNames.length || roomDescs.length) {
+  if (roomNames.length == 0 || roomIds.length == 0 || roomDescs.length == 0 || roomNames.length != roomIds.length || roomIds.length != roomDescs.length || roomNames.length != roomDescs.length) {
+    console.log('Kicked out of Display nearby rooms!');
     return;
   }
-  var count = 1;
+  var count = 0;
   var html = '<div class="tabbable tabs-left">'
-  + '<ul class="nav nav-tabs">'
-  + '<li class="active"><a href="#tab' + count + '" data-toggle="tab">' + roomNames[0] + '</a></li>';
-  for (var i = 1; i < roomNames.length; i++) {
+  + '<ul class="nav nav-tabs">';
+  for (var i = 0; i < roomNames.length; i++) {
     count = i + 1;
-    html += '<li><a href="#tab' + count + '" data-toggle="tab">' + roomNames[i] + '</a></li>';
+    html += '<li';
+    if (i == 0) {
+      html += ' class="active"';
+    }
+    html += '><a href="#tab' + count + '" data-toggle="tab">' + roomNames[i] + '</a></li>';
   }
   count++;
-  html += '<li><a href="#tab' + count + '" data-toggle="tab">Create a room!</a></li>';
+  html += '<li><a href="#tab' + count + '" data-toggle="tab">Create a room!</a></li>'
   + '</ul>'
   + '<div class="tab-content">'
-  + '<div class="tab-pane active" id="tab1">'
-  + '<p class="lead">' + roomNames[0] + '</p><br>'
-  + '<dl><dt>Description</dt><dd>' + roomDescs[0] + '</dd></dl>'
-  + '<div class="row-fluid"><div class="span2 offset9"><button id="' + roomIds[0] + '" class="btn btn-primary">Switch room!</button></div></div>'
-  + '</div>';
-  for (i = 1; i < roomDescs.length; i++) {
+  for (i = 0; i < roomDescs.length; i++) {
     count = i + 1;
-    html += '<div class="tab-pane" id="tab' + count + '">'
+    html += '<div class="tab-pane';
+    if (i == 0) {
+      html += ' active';
+    }
+    html += '" id="tab' + count + '">'
     + '<p class="lead">' + roomNames[i] + '</p><br>'
     + '<dl><dt>Description</dt><dd>' + roomDescs[i] + '</dd></dl>'
     + '<div class="row-fluid"><div class="span2 offset9"><button id="' + roomIds[i] + '" class="btn btn-primary">Switch room!</button></div></div>'
