@@ -16,8 +16,8 @@ function positionSuccess(position) {
       longitude: position.coords.longitude,
       accuracy: position.coords.accuracy,
     }
-    message('Location: ' + socket.coords.latitude + ', ' + socket.coords.longitude);
-    message('Accuracy: ' + socket.coords.accuracy);
+    console.log('Location: ' + socket.coords.latitude + ', ' + socket.coords.longitude);
+    console.log('Accuracy: ' + socket.coords.accuracy);
     if (socket.coords.accuracy <= desiredLocAccuracy) {
       socket.emit('Use loc info', socket.clientName, socket.clientId, socket.coords, ipAddress);
     } else {
