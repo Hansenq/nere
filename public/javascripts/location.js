@@ -1,6 +1,11 @@
-var desiredLocAccuracy = 70; // meters
+var desiredLocAccuracy = 100; // meters
 var positionTimeout = 15000; // time to wait for location response before defaulting.
 var answeredLocQues = false;
+
+// Runs when location cannot be obtained.
+function useIpAddr() {
+  socket.emit('Use ip info', socket.clientName, socket.clientId, ipAddress);
+}
 
 function positionSuccess(position) {
   if (answeredLocQues === false) {
@@ -16,8 +21,8 @@ function positionSuccess(position) {
     if (socket.coords.accuracy <= desiredLocAccuracy) {
       socket.emit('Use loc info', socket.clientName, socket.clientId, socket.coords, ipAddress);
     } else {
-      useIPAddr();
-      console.log('Location was not accurate enough; used IP Address instead');
+      useIpAddr();
+      messageAlert('Your location was not accurate enough; your IP Address was instead.', 'alert alert-info');
     }
   }
 }
@@ -32,11 +37,6 @@ function positionError(error) {
   if (answeredLocQues === false) {
     changeGSToLoading();
     answeredLocQues = true;
-    useIPAddr();
+    useIpAddr();
   }
-}
-
-// Runs when location cannot be obtained.
-function useIPAddr() {
-  socket.emit('Use ip info', socket.clientName, socket.clientId, ipAddress);
 }
