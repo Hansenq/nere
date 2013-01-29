@@ -273,7 +273,20 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Get nearby rooms', function() {
-    var root = socket.room;
+
+    // Stash names, IDs, and descriptions of rooms in separate arrays.
+    var roomNames = [];
+    var roomIds = [];
+    var roomDescs = [];
+
+    for (var i=0; i<rooms.length; i++){
+      roomNames[roomNames.length] = rooms[i].name;
+      roomIds[roomIds.length] = rooms[i].id;
+      roomDescs[roomDescs.length] = rooms[i].description;
+    }
+
+    // Send arrays to index.js for display in Bootstrap modal
+    socket.emit('Display nearby rooms', roomNames, roomIds, roomDescs);
   });
 
   // For future use

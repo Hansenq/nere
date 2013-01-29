@@ -188,7 +188,7 @@ socket.on('Display new chat', function (chat, senderName){
 
 // Deals with changing rooms
 // Replace with a linked list!
-socket.on('Display nearby rooms', function(roomNames, roomIds, roomDescs) {
+socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
   // Given Room name, room id, room description, 
   // Displays current room first, then other rooms by increasing distance
   if (roomNames.length == 0 || roomIds.length == 0 || roomDescs.length == 0 || roomNames.length === roomIds.length || roomIds.length === roomDescs.length || roomNames.length || roomDescs.length) {
@@ -351,6 +351,7 @@ $(document).ready(function() {
     }
   });
 
+  // Generates list of nearby rooms, and appends them to modal
   $('.navbar .nav #nav-rooms').click(function() {
     socket.emit('Get nearby rooms');
   });
