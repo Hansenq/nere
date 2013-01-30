@@ -9,8 +9,11 @@
   padding: 0px;
 }
 
-/*#roomsModal .rooms
-*/
+#roomsModal .rooms .create-room textarea {
+  width: 90%;
+  resize: none;         /* Removes resize corner */
+  overflow: auto;       /* Removes scroll bar in IE */
+}
 
 .infobar {
   position: fixed;

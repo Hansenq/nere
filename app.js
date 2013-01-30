@@ -66,7 +66,8 @@ function calcDistSq(x1, y1, x2, y2) {
 function Room (id) {
   this.id = id;
   this.name = id;
-  this.description = 'Default Room';
+  this.description = 'Default Public Room';
+  this.purpose = 'default public';
   this.radiusSq = 4900;     // default radiusSq to 70m
   this.numUsers = 0;
   this.cenLat = 0;
@@ -170,7 +171,7 @@ function findNearestRoomLoc(latitude, longitude) {
     }
     distSq = calcDistSq(latitude, longitude, room.cenLat, room.cenLong);
     console.log('Calculating Distances:=============(' + latitude + ', ' + longitude + ') to (' + room.cenLat + ', ' + room.cenLong + ')===========Distance Squared: ' + distSq);
-    if (distSq < room.radiusSq) {
+    if (distSq < room.radiusSq && room.purpose == 'default public') {
       if (distSq < closestDist) {
         closestDist = distSq;
         closestRoom = i;
@@ -272,6 +273,7 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(socket.room.id).emit('Update room name', newRoomName, clientName)
   });
 
+  // Change to returning rooms in distance from the socket position
   socket.on('Get nearby rooms', function() {
 
     // Stash names, IDs, and descriptions of rooms in separate arrays.
@@ -279,7 +281,7 @@ io.sockets.on('connection', function (socket) {
     var roomIds = [];
     var roomDescs = [];
 
-    for (var i=0; i<rooms.length; i++){
+    for (var i = 0; i < rooms.length; i++){
       roomNames[roomNames.length] = rooms[i].name;
       roomIds[roomIds.length] = rooms[i].id;
       roomDescs[roomDescs.length] = rooms[i].description;

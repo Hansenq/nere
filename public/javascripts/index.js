@@ -69,6 +69,7 @@ function decodeHTML(s) {
 // Begin using socket.io
 var username = checkCookie('username');
 var datetime = (new Date()).getTime();
+
 if (username === -1) {
   username = datetime;
 }
@@ -223,12 +224,11 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
     + '</div>';
   }
   count++;
-  html += '<div class="tab-pane" id="tab' + count + '">'
-  + '<form><fieldset><p class="lead">Create a room!</p>'
+  html += '<div class="create-room tab-pane" id="tab' + count + '">'
+  + '<p class="lead">Create a room!</p>'
   + '<label>Name:</label><input type="text" id="title" placeholder="Title">'
   + '<label>Description:</label><textarea id="description" rows="5" placeholder="Description"></textarea>'
   + '<div class="row-fluid"><div class="span4 offset8"><button class="btn btn-primary">Create Room!</button></div></div>'
-  + '</fieldset></form>'
   + '</div>'
   + '</div>'
   + '</div>';
@@ -245,7 +245,7 @@ socket.on('reconnected', function() {
 });
 socket.on('reconnecting', function() {
   if (!shownError) {
-    messageAlert('Uh oh, we\'re reconnecting to the server. Try refreshing the page!', 'alert alert-error');
+    messageAlert('Uh oh, we can\'t connect to the server. Try refreshing the page!', 'alert alert-error');
     shownError = true;
   }
 });
@@ -280,13 +280,15 @@ $('#gsModal .modal-footer .btn').click(function() {
   }
 });
 
+var watchId = null;
+
 $(document).ready(function() {
 
   // Shows Get Started page
   $('#gsModal').modal('show');
 
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
+    watchId = navigator.geolocation.watchPosition(
       positionSuccess, 
       positionError, 
       {
