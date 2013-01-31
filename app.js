@@ -218,18 +218,19 @@ function getRoomFromId(roomId) {
 
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
-  function changeRooms(newRoom) {
+  function changeRooms(newRoomId) {
+    var newRoom = getRoomFromId(newRoomId);
     io.sockets.in(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);
     socket.room.removeSocket(socket);
     socket.leave(socket.room.id);
     socket.room = newRoom;
-    console.log(newRoom);
     socket.join(socket.room.id);
     newRoom.addSocket(socket);
-    socket.emit('Join room', newRoom.name, newRoom.id);
-    socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIDs());
+    //socket.emit('Join room', newRoom.name, newRoom.id);
+    //socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIds());
+    socket.emit('Change room', newRoom.id, newRoom.name, getLobbyNames(), getLobbyIds());
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
-  }
+  } 
 
 
   // Emits a message to everyone!
@@ -246,7 +247,7 @@ io.sockets.on('connection', function (socket) {
     return lobbyNames;
   };
 
-  function getLobbyIDs() {
+  function getLobbyIds() {
     var lobby = io.sockets.clients(socket.room.id);
     var lobbyIDs = [];
     for (var i = 0; i < lobby.length; i++){
@@ -291,7 +292,6 @@ io.sockets.on('connection', function (socket) {
     socket.emit('Display nearby rooms', roomNames, roomIds, roomDescs);
   });
 
-  // For future use
   socket.on('Change room', function(newRoomId) {
     if (socket.room.id != newRoomId) {
       changeRooms(getRoomFromId(newRoomId));
@@ -299,7 +299,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('Get all lobby users', function () {
-    socket.emit('Display all lobby users', getLobbyNames(), getLobbyIDs());
+    socket.emit('Display all lobby users', getLobbyNames(), getLobbyIds());
   });
 
   socket.on('Send new file', function (fpfile, senderName) {
@@ -323,11 +323,11 @@ io.sockets.on('connection', function (socket) {
     socket.room.addSocket(socket);
     socket.join(socket.room.id);
 
-    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIDs());
+    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
     //socket.emit('Join room', socket.room.name);
     //socket.emit('Update client name', socket.clientName);
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
-    //socket.emit('Display all lobby users', getLobbyNames(), getLobbyIDs());
+    //socket.emit('Display all lobby users', getLobbyNames(), getLobbyIds());
   });
 
   // Runs on connection, without location info
@@ -342,11 +342,11 @@ io.sockets.on('connection', function (socket) {
     socket.join(socket.room.id);
     console.log('Joining room ' + ip);
 
-    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIDs());
+    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
     //socket.emit('Join room', socket.room.name);
     //socket.emit('Update client name', socket.clientName);
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
-    //socket.emit('Display all lobby users', getLobbyNames(), getLobbyIDs());
+    //socket.emit('Display all lobby users', getLobbyNames(), getLobbyIds());
   });
 
   socket.on('disconnect', function () {

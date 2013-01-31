@@ -87,18 +87,29 @@ messageAlert('Please allow location services for the best experience!', 'alert')
 messageAlert('nere first uses location to determine peers around you, and falls back on IP address if that\'s unavailable!', 'alert');
 
 // Does the same as 'Display client', 'Display all lobby users', 'Join room'
-socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyIDs) {
-  messageAlert('Room Initialized!', 'System');
+socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyIds) {
   dismissGSModal();
   $('.self-block input').val(decodeHTML(name));
   $('.room-block input').val(decodeHTML(roomName));
   for (var i=0; i<lobbyNames.length; i++){
-    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIDs[i] + '">' + lobbyNames[i] + '</strong></div>');
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIds[i] + '">' + lobbyNames[i] + '</strong></div>');
   }
   socket.roomId = roomId;
   socket.roomName = roomName;
   $('.posts-container').empty();
   messageAlert('You have joined the ' + roomName + ' room!', 'alert alert-success');
+});
+
+socket.on('Change room', function(roomId, roomName, lobbyNames, lobbyIds) {
+  $('.self-block input').val(decodeHTML(name));
+  $('.room-block input').val(decodeHTML(roomName));
+  for (var i=0; i<lobbyNames.length; i++){
+    $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIds[i] + '">' + lobbyNames[i] + '</strong></div>');
+  }
+  socket.roomId = roomId;
+  socket.roomName = roomName;
+  $('.posts-container').empty();
+  messageAlert('You have changed to the ' + roomName + ' room!', 'alert alert-success');
 });
 
 // This updates the client's input box, and the input box only.
@@ -197,8 +208,7 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
     return;
   }
   var count = 0;
-  var html = '<div class="tabbable tabs-left">'
-  + '<ul class="nav nav-tabs">';
+  var html = '<ul class="nav nav-tabs">';
   for (var i = 0; i < roomNames.length; i++) {
     count = i + 1;
     html += '<li';
@@ -213,23 +223,22 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
   + '<div class="tab-content">'
   for (i = 0; i < roomDescs.length; i++) {
     count = i + 1;
-    html += '<div class="tab-pane';
+    html += '<div class="tab-pane change-room';
     if (i == 0) {
       html += ' active';
     }
     html += '" id="tab' + count + '">'
     + '<p class="lead">' + roomNames[i] + '</p>'
     + '<dl><dt>Description</dt><dd>' + roomDescs[i] + '</dd></dl>'
-    + '<div class="row-fluid"><div class="span4 offset8"><button id="' + roomIds[i] + '" class="btn btn-primary">Switch room!</button></div></div>'
+    + '<div class="row-fluid"><div class="span4 offset8"><button id="' + roomIds[i] + '" class="btn btn-primary change-room">Switch room!</button></div></div>'
     + '</div>';
   }
   count++;
-  html += '<div class="create-room tab-pane" id="tab' + count + '">'
+  html += '<div class="tab-pane create-room" id="tab' + count + '">'
   + '<p class="lead">Create a room!</p>'
   + '<label>Name:</label><input type="text" id="title" placeholder="Title">'
   + '<label>Description:</label><textarea id="description" rows="5" placeholder="Description"></textarea>'
-  + '<div class="row-fluid"><div class="span4 offset8"><button class="btn btn-primary">Create Room!</button></div></div>'
-  + '</div>'
+  + '<div class="row-fluid"><div class="span4 offset8"><button class="btn btn-primary create-room">Create Room!</button></div></div>'
   + '</div>'
   + '</div>';
   $('#roomsModal .modal-body .rooms').html(html);
@@ -359,6 +368,20 @@ $(document).ready(function() {
   // Generates list of nearby rooms, and appends them to modal
   $('.navbar .nav #nav-rooms').click(function() {
     socket.emit('Get nearby rooms');
+  });
+
+  // Presses "Change room" button!
+  $('#roomsModal .rooms .tab-content .change-room.active button.change-room').click(function() {
+    // Change to Loading screen
+    console.log('Clicked Change Room');
+    if ($('this').attr('id') == socket.roomId) {
+      messageAlert('You are already in this room!', 'alert');
+    }
+    socket.emit('Change room', $('this').attr('id'));
+  });
+
+  $('#roomsModal .rooms .create-room button.create-room').click(function() {
+    socket.emit('Create room', encodeHTML($('#roomsModal .modal-body .create-room #title').val()), encodeHTML($('#roomsModal .modal-body .create-room #description').val()));
   });
 
   // Default focus to .messenger input
