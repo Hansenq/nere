@@ -242,6 +242,28 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
   + '</div>'
   + '</div>';
   $('#roomsModal .modal-body .rooms').html(html);
+
+  // Bind event handler after html actually changes!
+  $('#roomsModal .modal-body .rooms .tab-content .change-room .row-fluid button.change-room#' + roomIds[i]).on(function() {
+
+  });
+
+
+
+
+  // Presses "Change room" button!
+  $(' button.change-room').click(function() {
+    // Change to Loading screen
+    console.log('Clicked Change Room');
+    if ($('this').attr('id') == socket.roomId) {
+      messageAlert('You are already in this room!', 'alert');
+    }
+    socket.emit('Change room', $('this').attr('id'));
+  });
+
+  $('#roomsModal .rooms .create-room button.create-room').click(function() {
+    socket.emit('Create room', encodeHTML($('#roomsModal .modal-body .create-room #title').val()), encodeHTML($('#roomsModal .modal-body .create-room #description').val()));
+  });
 });
 
 
@@ -368,20 +390,6 @@ $(document).ready(function() {
   // Generates list of nearby rooms, and appends them to modal
   $('.navbar .nav #nav-rooms').click(function() {
     socket.emit('Get nearby rooms');
-  });
-
-  // Presses "Change room" button!
-  $('#roomsModal .rooms .tab-content .change-room.active button.change-room').click(function() {
-    // Change to Loading screen
-    console.log('Clicked Change Room');
-    if ($('this').attr('id') == socket.roomId) {
-      messageAlert('You are already in this room!', 'alert');
-    }
-    socket.emit('Change room', $('this').attr('id'));
-  });
-
-  $('#roomsModal .rooms .create-room button.create-room').click(function() {
-    socket.emit('Create room', encodeHTML($('#roomsModal .modal-body .create-room #title').val()), encodeHTML($('#roomsModal .modal-body .create-room #description').val()));
   });
 
   // Default focus to .messenger input
