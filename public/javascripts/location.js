@@ -1,10 +1,4 @@
-var desiredLocAccuracy = 100; // meters
-var positionTimeout = 15000; // time to wait for location response before defaulting.
-var answeredLocQues = false;
-var numFuncCalls1 = 0;
-var numFuncCalls2 = 0;
-var timeForAccuracy = 3000;
-var position = null;
+
 
 // Runs when location cannot be obtained.
 function useIpAddr() {
@@ -13,7 +7,7 @@ function useIpAddr() {
 }
 
 function useLocInfo() {
-  if (answeredLocQues === false) {
+  if (answeredLocQues == false) {
     answeredLocQues = true;
     socket.coords = {
       latitude: position.coords.latitude,
@@ -38,7 +32,7 @@ function positionSuccess(pos) {
   console.log('Your position became more accurate!');
   setTimeout(function() {
     numFuncCalls2++;
-    if (numFuncCalls1 === numFuncCalls2) {
+    if (numFuncCalls1 == numFuncCalls2) {
       useLocInfo();
       navigator.geolocation.clearWatch(watchId);
     }
@@ -52,7 +46,7 @@ function positionError(error) {
     3: 'Request timeout'
   };
   console.log('Position error: ' + errors[error.code]);
-  if (answeredLocQues === false) {
+  if (answeredLocQues == false) {
     changeGSToLoading();
     answeredLocQues = true;
     useIpAddr();

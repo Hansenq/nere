@@ -66,20 +66,20 @@ function calcDistSq(x1, y1, x2, y2) {
 function Room (id) {
   this.id = id;
   this.name = id;
-  this.description = 'Default Public Room';
+  this.desc = 'Default Public Room';
   this.purpose = 'default public';
   this.radiusSq = 4900;     // default radiusSq to 70m
   this.numUsers = 0;
-  this.cenLat = 0;
-  this.cenLong = 0;
+  this.latitude = 0;
+  this.longitude = 0;
   this.sockets = [];
 }
 
 Room.prototype.addSocket = function (socket) {
-  if (socket.coords != null && isNaN(socket.coords.latitude) === false && isNaN(socket.coords.longitude) === false) {
+  if (socket.coords !== null && isNaN(socket.coords.latitude) === false && isNaN(socket.coords.longitude) === false) {
     var plusMinus = 1;
-    this.cenLat = (this.cenLat * this.numUsers  + socket.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
-    this.cenLong = (this.cenLong * this.numUsers  + socket.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
+    this.latitude = (this.latitude * this.numUsers  + socket.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
+    this.longitude = (this.longitude * this.numUsers  + socket.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
   }
   this.numUsers++;
   var hasSpace = false;
@@ -98,18 +98,18 @@ Room.prototype.addSocket = function (socket) {
 }
 
 Room.prototype.removeSocket = function(socket) {
-  if (socket.coords != null && isNaN(socket.coords.latitude) === false && isNaN(socket.coords.longitude) === false) {
+  if (socket.coords !== null && isNaN(socket.coords.latitude) === false && isNaN(socket.coords.longitude) === false) {
     var plusMinus = -1;
-    this.cenLat = (this.cenLat * this.numUsers  + socket.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
-    this.cenLong = (this.cenLong * this.numUsers  + socket.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
+    this.latitude = (this.latitude * this.numUsers  + socket.coords.latitude * plusMinus) / (this.numUsers + plusMinus);
+    this.longitude = (this.longitude * this.numUsers  + socket.coords.longitude * plusMinus) / (this.numUsers + plusMinus);
   }
   this.numUsers--;
   var empty = true;
   for (var i = 0; i < this.sockets.length; i++) {
-    if (this.sockets[i] != null && this.sockets[i].clientId === socket.clientId) {
+    if (this.sockets[i] !== null && this.sockets[i].clientId === socket.clientId) {
       this.sockets[i] = null;
     }
-    if (empty === true && this.sockets[i] != null) {
+    if (empty === true && this.sockets[i] !== null) {
       empty = false;
     }
   }
@@ -129,12 +129,12 @@ function addRoom(roomId) {
     if (rooms[i].id === roomId) {
       exists = true;
     }
-    if (rooms[i] === null && nullVal = -1) {
+    if (rooms[i] === null && nullVal === -1) {
       nullVal = i;
     }
   }
   var room = new Room(roomId);
-  if (exists === false) {
+  if (exists = false) {
     if (nullVal === -1) {
       rooms[nullVal] = room;
     } else {
@@ -147,7 +147,7 @@ function addRoom(roomId) {
 
 function removeRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i] != null && rooms[i].id === roomId) {
+    if (rooms[i] !== null && rooms[i].id === roomId) {
       console.log('ALERT! Room ' + rooms[i].id + ' has been set to NULL!');
       rooms[i] = null;
     }
@@ -166,24 +166,24 @@ function findNearestRoomLoc(latitude, longitude) {
       nullVal = i;
       continue;
     }
-    if (isNaN(room.cenLat) === true || isNaN(room.cenLong) === true) {
+    if (isNaN(room.latitude) === true || isNaN(room.longitude) === true) {
       continue;
     }
-    distSq = calcDistSq(latitude, longitude, room.cenLat, room.cenLong);
-    console.log('Calculating Distances:=============(' + latitude + ', ' + longitude + ') to (' + room.cenLat + ', ' + room.cenLong + ')===========Distance Squared: ' + distSq);
-    if (distSq < room.radiusSq && room.purpose == 'default public') {
+    distSq = calcDistSq(latitude, longitude, room.latitude, room.longitude);
+    console.log('Calculating Distances:=============(' + latitude + ', ' + longitude + ') to (' + room.latitude + ', ' + room.longitude + ')============Distance Squared: ' + distSq);
+    if (distSq < room.radiusSq && room.purpose === 'default public') {
       if (distSq < closestDist) {
         closestDist = distSq;
         closestRoom = i;
       }
     }
   }
-  if (closestRoom != -1) {
+  if (closestRoom !== -1) {
     console.log('Found nearby room ' + rooms[closestRoom].id);
     return rooms[closestRoom];
   }
   var room = new Room((new Date()).getTime());
-  if (nullVal != -1) {
+  if (nullVal !== -1) {
     rooms[nullVal] = room;
   } else {
     rooms[rooms.length] = room;
@@ -196,7 +196,7 @@ function findNearestRoomLoc(latitude, longitude) {
 function getRoomFromId(roomId) {
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i] != null && rooms[i].id === roomId) {
+    if (rooms[i] !== null && rooms[i].id === roomId) {
       console.log('Found this room from the following id: ' + roomId);
       //console.log(rooms[i]);
       return rooms[i];
@@ -206,7 +206,7 @@ function getRoomFromId(roomId) {
     }
   }
   var room = new Room(roomId);
-  if (nullVal != -1) {
+  if (nullVal !== -1) {
     rooms[nullVal] = room;
   } else {
     rooms[rooms.length] = room;
@@ -218,17 +218,30 @@ function getRoomFromId(roomId) {
 
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
-  function changeRooms(newRoomId) {
+  function changeRoomFromId(newRoomId) {
     var newRoom = getRoomFromId(newRoomId);
     io.sockets.in(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);
     socket.room.removeSocket(socket);
     socket.leave(socket.room.id);
     socket.room = newRoom;
     socket.join(socket.room.id);
-    newRoom.addSocket(socket);
+    socket.room.addSocket(socket);
     //socket.emit('Join room', newRoom.name, newRoom.id);
     //socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIds());
     socket.emit('Change room', newRoom.id, newRoom.name, getLobbyNames(), getLobbyIds());
+    socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
+  } 
+
+  function changeRoom(newRoom) {
+    io.sockets.in(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);
+    socket.room.removeSocket(socket);
+    socket.leave(socket.room.id);
+    socket.room = newRoom;
+    socket.join(socket.room.id);
+    socket.room.addSocket(socket);
+    //socket.emit('Join room', newRoom.name, newRoom.id);
+    //socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIds());
+    socket.emit('Change room', socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
   } 
 
@@ -276,26 +289,39 @@ io.sockets.on('connection', function (socket) {
 
   // Change to returning rooms in distance from the socket position
   socket.on('Get nearby rooms', function() {
-
     // Stash names, IDs, and descriptions of rooms in separate arrays.
     var roomNames = [];
     var roomIds = [];
     var roomDescs = [];
+    var roomCents = [];
 
     for (var i = 0; i < rooms.length; i++){
-      roomNames[roomNames.length] = rooms[i].name;
-      roomIds[roomIds.length] = rooms[i].id;
-      roomDescs[roomDescs.length] = rooms[i].description;
+      if (rooms[i] !== null) {
+        roomNames[roomNames.length] = rooms[i].name;
+        roomIds[roomIds.length] = rooms[i].id;
+        roomDescs[roomDescs.length] = rooms[i].desc;
+        roomCents[roomCents.length] = {
+          latitude: rooms[i].latitude,
+          longitude: rooms[i].longitude,
+        };
+      }
     }
 
     // Send arrays to index.js for display in Bootstrap modal
-    socket.emit('Display nearby rooms', roomNames, roomIds, roomDescs);
+    socket.emit('Display nearby rooms', roomNames, roomIds, roomDescs, roomCents);
   });
 
   socket.on('Change room', function(newRoomId) {
-    if (socket.room.id != newRoomId) {
-      changeRooms(getRoomFromId(newRoomId));
+    if (socket.room.id !== newRoomId) {
+      changeRoomFromId(getRoomFromId(newRoomId));
     }
+  });
+
+  socket.on('Create room', function(newRoomName, newRoomDesc){
+    var newRoom = addRoom(new Date().getTime());
+    newRoom.name = newRoomName;
+    newRoom.desc = newRoomDesc;
+    changeRoom(newRoom);
   });
 
   socket.on('Get all lobby users', function () {
@@ -350,7 +376,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
-    if (socket.room != null){
+    if (socket.room !== null){
       socket.room.removeSocket(this);
       console.log('Leaving room: ' + socket);
       socket.broadcast.to(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);

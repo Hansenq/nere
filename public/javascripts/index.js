@@ -34,12 +34,24 @@ function checkCookie(c_name)
     return -1;
   }
 }
+function calcDist(x1, y1, x2, y2) {
+  // http://www.movable-type.co.uk/scripts/latlong.html
+  // Equirectangular approximation and pythagorean theorem
+  x1 = x1 / 180 * Math.PI;
+  x2 = x2 / 180 * Math.PI;
+  y1 = y1 / 180 * Math.PI;
+  y2 = y2 / 180 * Math.PI;
+  var x = (y2 - y1) * Math.cos((x1 + x2) / 2);
+  var y = (x2 - x1);
+  return Math.sqrt(x * x + y * y) * 6378.1 * 1000;   // change to meters 40680159610000 = (6378.1 * 1000)^2
+}
 
 function message(chat, senderName) {
   if (senderName == "" || senderName == null) {
-    senderName = 'System';
+    $('.posts-container').append('<emph><strong>System</strong>:&nbsp;&nbsp;' + chat + '</emph><br>');     
+  } else {
+    $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;' + chat + '<br>'); 
   }
-  $('.posts-container').append('<strong>' + senderName + '</strong>:&nbsp;&nbsp;' + chat + '<br>'); 
   // Lock scrollbar to bottom on send.
   $('.main').scrollTop($('.main').prop('scrollHeight'));
 }
@@ -60,17 +72,26 @@ function encodeHTML(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 function decodeHTML(s) {
-  if (typeof s === "string")
+  if (typeof s == "string")
     return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
   else
     return s;
 }
 
+var desiredLocAccuracy = 100; // meters
+var positionTimeout = 15000; // time to wait for location response before defaulting.
+var answeredLocQues = false;
+var numFuncCalls1 = 0;
+var numFuncCalls2 = 0;
+var timeForAccuracy = 3000;
+var position = null;
+var searchRadius = 500;      // meters
+
 // Begin using socket.io
 var username = checkCookie('username');
 var datetime = (new Date()).getTime();
 
-if (username === -1) {
+if (username == -1) {
   username = datetime;
 }
 
@@ -88,7 +109,7 @@ messageAlert('nere first uses location to determine peers around you, and falls 
 
 // Does the same as 'Display client', 'Display all lobby users', 'Join room'
 socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyIds) {
-  dismissGSModal();
+  dismissAllModals();
   $('.self-block input').val(decodeHTML(name));
   $('.room-block input').val(decodeHTML(roomName));
   for (var i=0; i<lobbyNames.length; i++){
@@ -97,19 +118,25 @@ socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyI
   socket.roomId = roomId;
   socket.roomName = roomName;
   $('.posts-container').empty();
-  messageAlert('You have joined the ' + roomName + ' room!', 'alert alert-success');
+  messageAlert('You have joined the <em>' + roomName + '</em> room!', 'alert alert-success');
+
+  // Default focus to .messenger input
+  $('.messenger .chat-sender input').focus();
 });
 
 socket.on('Change room', function(roomId, roomName, lobbyNames, lobbyIds) {
-  $('.self-block input').val(decodeHTML(name));
   $('.room-block input').val(decodeHTML(roomName));
+  $('.users').empty();
   for (var i=0; i<lobbyNames.length; i++){
     $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIds[i] + '">' + lobbyNames[i] + '</strong></div>');
   }
   socket.roomId = roomId;
   socket.roomName = roomName;
   $('.posts-container').empty();
-  messageAlert('You have changed to the ' + roomName + ' room!', 'alert alert-success');
+  messageAlert('You have changed to the <em>' + roomName + '</em> room!', 'alert alert-success');
+
+  // Default focus to .messenger input
+  $('.messenger .chat-sender input').focus();
 });
 
 // This updates the client's input box, and the input box only.
@@ -121,12 +148,12 @@ socket.on('Update client name', function (name) {
 socket.on('Update room name', function(roomName, clientName) {
   socket.roomName = roomName;
   $('.room-block input').val(decodeHTML(roomName));
-  messageAlert(clientName + ' has changed the room name to ' + decodeHTML(roomName) + '!', 'alert alert-info');
+  messageAlert('<em>' + clientName + '</em> has changed the room name to <em>' + decodeHTML(roomName) + '</em>!', 'alert alert-info');
 });
 
 socket.on('Display new nearby user', function (clientName, clientId) {
   $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + clientName + '</strong></div>');
-  messageAlert(clientName + ' connected.', 'System');
+  messageAlert('<em>' + clientName + '</em> connected.', 'System');
 });
 
 socket.on('Refresh all lobby users', function (lobbyNames, lobbyIDs) {
@@ -144,20 +171,20 @@ socket.on('Display all lobby users', function (lobbyNames, lobbyIDs) {
 
 socket.on('Change nearby client name', function(newName, oldName, clientId) {
   $('.user-block').each(function(){
-    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + oldName + '</strong>'){
+    if ($(this).html() == '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + oldName + '</strong>'){
       $(this).html('<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + clientId + '">' + newName + '</strong>');
     }
   });
-  messageAlert(oldName + ' changed his/her name to ' + newName, 'System');
+  messageAlert('<em>' + oldName + '</em> changed his/her name to <em>' + newName + '</em>', 'System');
 });
 
 socket.on('Delete user', function (name, id) {
   $('.user-block').each(function(){
-    if ($(this).html() === '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong>'){
+    if ($(this).html() == '<i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + id + '">' + name + '</strong>'){
       $(this).remove();
     }
   });
-  messageAlert(name + ' disconnected a minute ago.', 'System');
+  messageAlert('<em>' + name + '</em> disconnected a minute ago.', 'System');
 });
 
 socket.on('Display new file', function (fpfile, senderName) {
@@ -191,7 +218,7 @@ socket.on('Join room', function(roomName, roomId) {
   socket.roomId = roomId;
   socket.roomName = roomName;
   $('.posts-container').empty();
-  messageAlert('You\'ve joined the ' + roomName + ' room!', 'alert alert-success');
+  messageAlert('You\'ve joined the <em>' + roomName + '</em> room!', 'alert alert-success');
 });
 
 socket.on('Display new chat', function (chat, senderName){
@@ -200,69 +227,101 @@ socket.on('Display new chat', function (chat, senderName){
 
 // Deals with changing rooms
 // Replace with a linked list!
-socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs) {
-  // Given Room name, room id, room description, 
-  // Displays current room first, then other rooms by increasing distance
+socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs, roomCents) {
   if (roomNames.length == 0 || roomIds.length == 0 || roomDescs.length == 0 || roomNames.length != roomIds.length || roomIds.length != roomDescs.length || roomNames.length != roomDescs.length) {
     console.log('Kicked out of Display nearby rooms!');
+    console.log(roomNames.length);
+    console.log(roomIds.length);
+    console.log(roomDescs.length);
+    console.log(roomCents.length);
+    $('#roomsModal .modal-body .rooms').html('Error: Unable to retrieve Rooms. Please refresh the page.');
     return;
+  }
+  // Given Room name, room id, room description, 
+
+  // Displays Rooms only within searchRadius
+  var roomDists = [];
+  for (var i = 0; i < roomCents.length; i++) {
+    roomDists[i] = calcDist(socket.coords.latitude, socket.coords.longitude, roomCents[i].latitude, roomCents[i].longitude);
+    console.log(socket.coords.latitude + ', ' + socket.coords.longitude + '; ' + roomCents[i].latitude + ', ' + roomCents[i].longitude + ': ' + roomDists[i]);
+    if (roomDists[i] > searchRadius) {
+      roomDists[i] = -1;
+    }
   }
   var count = 0;
   var html = '<ul class="nav nav-tabs">';
-  for (var i = 0; i < roomNames.length; i++) {
-    count = i + 1;
-    html += '<li';
-    if (i == 0) {
-      html += ' class="active"';
+  for (i = 0; i < roomNames.length; i++) {
+    if (roomDists[i] != -1) {
+      count = i + 1;
+      html += '<li';
+      if (i == 0) {
+        html += ' class="active"';
+      }
+      html += '><a href="#tab' + count + '" data-toggle="tab">' + roomNames[i] + '</a></li>';
     }
-    html += '><a href="#tab' + count + '" data-toggle="tab">' + roomNames[i] + '</a></li>';
   }
   count++;
-  html += '<li><a href="#tab' + count + '" data-toggle="tab">Create a room!</a></li>'
+  html += '<li';
+  if (i == 0) {
+    html += ' class="active"';
+  }
+  html += '><a href="#tab' + count + '" data-toggle="tab">Create a room!</a></li>'
   + '</ul>'
   + '<div class="tab-content">'
   for (i = 0; i < roomDescs.length; i++) {
-    count = i + 1;
-    html += '<div class="tab-pane change-room';
-    if (i == 0) {
-      html += ' active';
+    if (roomDists[i] != -1) {
+      count = i + 1;
+      html += '<div class="tab-pane change-room';
+      if (i == 0) {
+        html += ' active';
+      }
+      html += '" id="tab' + count + '">'
+      + '<p class="lead">' + roomNames[i] + ' - <em>' + roomDists[i] + 'm</em></p>'
+      + '<dl><dt>Description</dt><dd>' + roomDescs[i] + '</dd></dl>'
+      + '<div class="row-fluid"><div class="span4 offset8"><button id="' + roomIds[i] + '" class="btn btn-primary change-room">Switch room!</button></div></div>'
+      + '</div>';
     }
-    html += '" id="tab' + count + '">'
-    + '<p class="lead">' + roomNames[i] + '</p>'
-    + '<dl><dt>Description</dt><dd>' + roomDescs[i] + '</dd></dl>'
-    + '<div class="row-fluid"><div class="span4 offset8"><button id="' + roomIds[i] + '" class="btn btn-primary change-room">Switch room!</button></div></div>'
-    + '</div>';
   }
   count++;
-  html += '<div class="tab-pane create-room" id="tab' + count + '">'
+  html += '<div class="tab-pane create-room';
+  if (i == 0) {
+    html += ' active';
+  }
+  html += '" id="tab' + count + '">'
   + '<p class="lead">Create a room!</p>'
-  + '<label>Name:</label><input type="text" id="title" placeholder="Title">'
-  + '<label>Description:</label><textarea id="description" rows="5" placeholder="Description"></textarea>'
+  + '<div class="control-group" id="title"><label class="control-label">Name:</label><input type="text" placeholder="Title"></div>'
+  + '<div class="control-group" id="desc"><label class="control-label">Description:</label><textarea rows="5" placeholder="Description"></textarea></div>'
+  //+ '<label>Radius:</label><input type="text" id="radius" placeholder="Room Radius">'
   + '<div class="row-fluid"><div class="span4 offset8"><button class="btn btn-primary create-room">Create Room!</button></div></div>'
   + '</div>'
   + '</div>';
   $('#roomsModal .modal-body .rooms').html(html);
 
-  // Bind event handler after html actually changes!
-  $('#roomsModal .modal-body .rooms .tab-content .change-room .row-fluid button.change-room#' + roomIds[i]).on(function() {
+  // Bind change room event handler after html actually changes!
+  for (i = 0; i < roomIds.length; i++) {
+    $('#roomsModal .modal-body .rooms .tab-content .change-room .row-fluid button.change-room#' + roomIds[i]).on('click', function() {
+      // Change to Loading screen
+      console.log('Clicked Change Room');
+      if ($('this').attr('id') == socket.roomId) {
+        messageAlert('You are already in this room!', 'alert');
+      }
+      socket.emit('Change room', $('this').attr('id'));
+    });
+  }
 
-  });
-
-
-
-
-  // Presses "Change room" button!
-  $(' button.change-room').click(function() {
-    // Change to Loading screen
-    console.log('Clicked Change Room');
-    if ($('this').attr('id') == socket.roomId) {
-      messageAlert('You are already in this room!', 'alert');
+  // Bind create room event handler after html changes!
+  $('#roomsModal .modal-body .rooms .tab-content .create-room .row-fluid button.create-room').on('click', function() {
+    var newRoomName = $('#roomsModal .modal-body .create-room .control-group#title input').val().trim();
+    var newRoomDesc = $('#roomsModal .modal-body .create-room .control-group#desc textarea').val().trim(); 
+    if (newRoomName == "" || newRoomName == null) {
+      $('#roomsModal .modal-body .rooms .tab-content .create-room .control-group#title').html('<div class="control-group error" id="title"><label class="control-label">Name:</label><input type="text" placeholder="Title"><span class="help-inline">Please type a valid Title!</span></div>');
+      return;
     }
-    socket.emit('Change room', $('this').attr('id'));
-  });
-
-  $('#roomsModal .rooms .create-room button.create-room').click(function() {
-    socket.emit('Create room', encodeHTML($('#roomsModal .modal-body .create-room #title').val()), encodeHTML($('#roomsModal .modal-body .create-room #description').val()));
+    if (newRoomDesc == "" || newRoomDesc == null) {
+      $('#roomsModal .modal-body .rooms .tab-content .create-room .control-group#desc').html('<div class="control-group error" id="desc"><label class="control-label">Description:</label><textarea id="desc" rows="5" placeholder="Description"></textarea><span class="help-inline">Please type a valid Description!</span></div>');
+      return;
+    }
+    socket.emit('Create room', encodeHTML(newRoomName), encodeHTML(newRoomDesc));
   });
 });
 
@@ -279,12 +338,14 @@ socket.on('reconnecting', function() {
     messageAlert('Uh oh, we can\'t connect to the server. Try refreshing the page!', 'alert alert-error');
     shownError = true;
   }
+  dismissAllModals();
 });
 socket.on('error', function(e) {
   if (!shownError) {
     messageAlert(e ? e : 'An unknown error occurred. Try refreshing the page!', 'alert alert-error');
     shownError = true;
   }
+  dismissAllModals();
 });
 socket.on('announcement', function (msg) {
   $('.posts-container').append($('<p>').append($('<em>').text(msg)));
@@ -293,8 +354,11 @@ socket.on('announcement', function (msg) {
 
 // Other JQuery calls
 
-function dismissGSModal() {
+function dismissAllModals() {
   $('#gsModal').modal('hide');
+  $('#roomsModal').modal('hide');
+  $('#aboutModal').modal('hide');
+  console.log('Closing all modals!');
 }
 
 function changeGSToLoading() {
@@ -304,9 +368,9 @@ function changeGSToLoading() {
 // Configuring Get Started modal
 $('#gsModal').modal({backdrop: 'static'});
 $('#gsModal .modal-footer .btn').click(function() {
-  if (answeredLocQues === false) { 
+  if (answeredLocQues == false) { 
     answeredLocQues = true;
-    dismissGSModal();
+    dismissAllModals();
     useIPAddr();
   }
 });
@@ -342,7 +406,7 @@ $(document).ready(function() {
   $('.messenger .chat-sender input').keypress(function(event) {
     // Send chat when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
-    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
+    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
       socket.emit('Send new chat', encodeHTML($(this).val()), socket.clientName);
         // Clear client input
@@ -354,12 +418,12 @@ $(document).ready(function() {
   $('.sidebar .self-block input').keypress(function(event) {
     // Saves name to cookies when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
-    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
+    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
       var newName = encodeHTML($(this).val().trim());
       $(this).blur();
       var un = checkCookie();
-      if (newName === '' || newName === null || newName === socket.clientName){
+      if (newName == '' || newName == null || newName == socket.clientName){
         console.log('New name is empty or null or unchanged!');
         messageAlert('You didn\'t change your name!', 'alert alert-info');
         return;
@@ -374,13 +438,13 @@ $(document).ready(function() {
   });
 
   $('.sidebar .room-block input').keypress(function(event) {
-    if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
+    if (event.which == 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
       var newRoomName = encodeHTML($(this).val().trim());
       $(this).blur();
-      if (newRoomName === '' || newRoomName === null || newRoomName === socket.roomName) {
+      if (newRoomName == '' || newRoomName == null || newRoomName == socket.roomName) {
         console.log('New name is empty, null, or unchanged!');
-        message('You didn\'t change the room name!', 'alert alert-info');
+        messageAlert('You didn\'t change the room name!', 'alert alert-info');
         return;
       }
       socket.emit('Change room name', newRoomName, socket.clientName);
@@ -392,6 +456,4 @@ $(document).ready(function() {
     socket.emit('Get nearby rooms');
   });
 
-  // Default focus to .messenger input
-  $('.messenger .chat-sender input').focus();
 });
