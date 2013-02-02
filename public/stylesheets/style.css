@@ -1,3 +1,46 @@
+@media (max-width: 767px) {
+
+  .main {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    z-index: -1;
+    overflow-y: scroll;
+  }
+
+  .main .main-block{
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 75px;
+  }
+
+  .modal-body {
+    max-height: 480px;
+  }
+
+}
+
+@media (min-width: 767px) {
+
+  .main {
+    position: fixed;
+    height: 100%;
+    width: 80%;
+    left: 0;
+    z-index: -1;
+    overflow-y: scroll;
+  }
+
+  .main .main-block{
+    padding-top: 95px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 75px;
+  }
+}
+
 .navbar .container {
   width: 90%;
 }
@@ -9,8 +52,16 @@
   padding: 0px;
 }
 
-/*#roomsModal .rooms
-*/
+.loading {
+  margin: 0 auto;
+  text-align: center;
+}
+
+#roomsModal .rooms .create-room textarea {
+  width: 90%;
+  resize: none;         /* Removes resize corner */
+  overflow: auto;       /* Removes scroll bar in IE */
+}
 
 .infobar {
   position: fixed;
@@ -29,13 +80,75 @@
   line-height: 35px;
 }
 
+#sidebarModal .self-block {
+  border-bottom: 3px solid #333333;
+  padding: 20px;
+  padding-top: 0px;
+  text-align: center;
+
+}
+
+#sidebarModal .self-block input {
+  margin: 0;
+  width: 80%;
+}
+
+#sidebarModal .room-block {
+  border-bottom: 3px solid #333333;
+  padding: 20px;
+  text-align: center;
+}
+
+#sidebarModal .room-block input {
+  margin: 0;
+  width: 80%;
+}
+
+#sidebarModal .title-block {
+  border-bottom: 1px solid #aaaaaa;
+  background-color: #fafafa;
+  text-align: center;
+  background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+  background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  background-repeat: repeat-x;
+}
+
+#sidebarModal .user-block {
+  background-color: #eeeeee;
+  background-image: url("/subtlepatterns/gray_jean/gray_jean.png");
+  background-repeat: repeat;
+  padding: 20px;
+}
+
+#sidebarModal .file-sender {
+  border-bottom: 3px solid #333333;
+  text-align: center;
+}
+
+#sidebarModal .file-sender button{
+  font-weight: bold;
+  margin: 0 auto;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+}
+
+.no-space [class*="span"] {
+  margin-left: 0;
+}
+
 .sidebar {
   position: fixed;
   height: 100%;
-  width: 275px;
+  /*width: 275px;*/
+  width: 20%;
   top: 0;
   right: 0;
   padding-top: 75px;
+  margin: 0;
   border-left: 3px solid #333333;
   z-index: 0;
   background-color: #eeeeee;
@@ -47,27 +160,31 @@
   border-bottom: 3px solid #333333;
   padding: 20px;
   background-color: #f7f7f7;
+  text-align: center;
 }
 
 .self-block input{
   margin: 0;
-  width: 180px;
+  width: 70%;
 }
 
 .sidebar .room-block{
   border-bottom: 3px solid #333333;
   padding: 20px;
   background-color: #f7f7f7;
+  text-align: center;
 }
 
 .room-block input{
   margin: 0;
-  width: 165px;
+  width: 70%;
 }
 
 .sidebar .title-block {
   border-bottom: 1px solid #aaaaaa;
-  padding: 5px 0px 5px 75px;
+  /*padding: 5px 0px 5px 75px;*/
+  margin: 0 auto;
+  text-align: center;
   background-color: #fafafa;
   cursor: default;
   background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
@@ -97,41 +214,25 @@
 .file-sender .btn-block{
   font-weight: bold;
   height: 50px;
-  width: 275px;
-  -webkit-border-radius: 0px;
-     -moz-border-radius: 0px;
-          border-radius: 0px;
-}
-
-.main {
-  position: fixed;
-  height: 100%;
   width: 100%;
-  left: 0;
-  z-index: -1;
-
-  overflow-y: scroll;
-}
-
-.main .main-block{
-  padding-top: 95px;
-  padding-left: 20px;
-  padding-right: 298px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
 }
 
 .main .main-block .posts-container {
   display: block;
-  padding-bottom: 81px;
   width: 100%;
-  height: 100%;
+  height: 90%;
+  overflow-y: hidden;
   -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 
 /* 
   @Hansen: For some reason, only the main class's overflow seems to be working. 
   I fixed the scrollbar with that in mind. It works now (as well as auto-scroll).
-*/
+  */
 
   /*overflow-x: hidden;*/
   overflow-y: auto;
@@ -190,20 +291,20 @@
   margin-bottom: 0px;
 }
 
-.messenger .chat-sender{
+/*.messenger .chat-sender{
   padding-right: 281px;
-}
+  }*/
 
-.messenger .chat-sender input{
-  height: 55px;
-  display: block;
-  width: 100%;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-  padding-left: 15px;
-  padding-right: 18px;
-  -webkit-border-radius: 0px;
-     -moz-border-radius: 0px;
-          border-radius: 0px;
-}
+  .messenger .chat-sender input{
+    height: 55px;
+    display: block;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 18px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+  }

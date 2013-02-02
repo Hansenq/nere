@@ -6,13 +6,16 @@ block content
     .navbar-inner
       .container
         .brand #{title}
+          a(href='')
         ul.nav
-          li.active
+          li.active.divider-vertical
             a#chat Chat
-          li
+          li.divider-vertical
             a(href='#roomsModal', data-toggle='modal')#nav-rooms Rooms
-          li
+          li.divider-vertical
             a(href='#aboutModal', data-toggle='modal') About
+          li.visible-phone.divider-vertical
+            a(href='#sidebarModal', data-toggle='modal') Room Info
 
   // "Get Started" Modal
   #gsModal.modal.hide.fade(tabindex='-1', role='dialog')
@@ -22,8 +25,9 @@ block content
       p Chat with people around you, literally.
       p nere uses location data and your ip address to create chat rooms of people around you.
       p Click 'Allow' to begin!
-      img(src='/images/locPrompt_chrome.png')
-    .modal-footer
+      img(src='/images/locPrompt_safari.png')
+      em If you don't see the prompt, try refreshing the page or enabling it in your browser settings!
+    //.modal-footer
       button.btn Use IP Address Instead
 
   // "Rooms" Modal
@@ -33,17 +37,18 @@ block content
       h3 Custom Rooms nere You
     .modal-body
       p Want to switch to a custom room? Select one from the list below, or create a new private room!
+      em Displays only rooms within 500m.
       .rooms.tabbable.tabs-left
-        .img-center
+        .img-center.loading
           img(src='/images/loading.gif')
-        p(style='text-align: center') Please wait...
+        p Loading...
     .modal-footer
       button.btn(data-dismiss='modal') Close
     
   // "About" Modal
   #aboutModal.modal.hide.fade(tabindex='-1', role='dialog')
     .modal-header
-      button.close(type='button', data-dismiss='modal') ×
+      button.close(type='button', data-dismiss='modal')×
       h3 About
     .modal-body
       p Nere is an web application that allows you to broadcast files and messages to devices physically nearby.
@@ -51,37 +56,65 @@ block content
     .modal-footer
       button.btn(data-dismiss='modal') Close
 
+  // "Sidebar" Modal for Phones!
+  #sidebarModal.modal.hide.fade(tabindex='-1', role='dialog')
+    .modal-header
+      button.close(type='button', data-dismiss='modal') ×
+      h3 Room Information:
+    .modal-body
+      .self-block
+        strong You:
+        &nbsp;&nbsp;
+        input(type='text', value='')
+      .room-block
+        strong Room:
+        &nbsp;&nbsp;
+        input(type='text', value='')
+      .file-sender
+        button.btn.btn-large.btn-primary Share New File
+      .title-block
+        strong People Near You
+        &nbsp;
+        i.icon-globe
+      .users
+    .modal-footer
+      button.btn(data-dismiss='modal') Close
+
+
   // Infobar
-  .infobar
+  .infobar.hidden-phone
     strong(style='float: right;')#text-infobar
 
-  // Sidebar (client name, file sender, & nearby users)
-  .sidebar
-    .self-block
-      strong You:
-      &nbsp;&nbsp;
-      input(type='text', value='')
-    .room-block
-      strong Room:
-      &nbsp;&nbsp;
-      input(type='text', value='')
-    .file-sender
-      button.btn.btn-primary.btn-large.btn-block Share New File
-    .title-block
-      strong People Near You
-      &nbsp;
-      i.icon-globe
-    .users
+  .container-fluid
+    .no-space
+      // Posts and file uploads
+      .main
+        .main-block
+          .posts-container
 
-  // Posts and file uploads
-  .main
-    .main-block
-      .posts-container
+      // Sidebar (client name, file sender, & nearby users)
+      .sidebar.hidden-phone
+        .self-block
+          strong You:
+          &nbsp;&nbsp;
+          input(type='text', value='')
+        .room-block
+          strong Room:
+          &nbsp;&nbsp;
+          input(type='text', value='')
+        .file-sender
+          button.btn.btn-primary.btn-large.btn-block Share New File
+        .title-block
+          strong People Near You
+          &nbsp;
+          i.icon-globe
+        .users
 
-  // Messenger
-  .messenger
-    .chat-sender
-      input(type='text', placeholder='What&#39;s on your mind?')
+    .row-fluid
+      // Messenger
+      .messenger
+        .chat-sender
+          input(type='text', placeholder='What&#39;s on your mind?')
 
 // Init JS
 block footerJs
