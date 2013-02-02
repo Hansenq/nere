@@ -310,7 +310,7 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs, roomC
         messageAlert('You are already in this room!', 'alert');
       }
       socket.emit('Change room', parseInt(this.id, 10));
-      $('#roomsModal .modal-body .rooms').html('<div class="img-center"><img src="/images/loading.gif" /><p>Loading...</p></div>');
+      $('#roomsModal .modal-body .rooms').html('<div class="img-center loading"><img src="/images/loading.gif" /><p>Loading...</p></div>');
     });
   }
 
@@ -327,6 +327,7 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs, roomC
       return;
     }
     socket.emit('Create room', encodeHTML(newRoomName), encodeHTML(newRoomDesc));
+    $('#roomsModal .modal-body .rooms').html('<div class="img-center loading"><img src="/images/loading.gif" /><p>Loading...</p></div>');
   });
 });
 
