@@ -1,11 +1,25 @@
+/*
+ * location.js
+ * ----------------------------------------
+ * FILE DESCRIPTION HERE
+ * 
+ */
 
-
-// Runs when location cannot be obtained.
+/*
+ * Function: useIpAddr()
+ * FUNCTION DESCRIPTION HERE
+ * 
+ */
 function useIpAddr() {
   socket.emit('Use ip info', socket.clientName, socket.clientId, ipAddress);
   alert('Your service may be affected because your location could not be determined accurately enough.')
 }
 
+/*
+ * Function: useLocInfo()
+ * FUNCTION DESCRIPTION HERE
+ * 
+ */
 function useLocInfo() {
   if (answeredLocQues === false) {
     answeredLocQues = true;
@@ -25,6 +39,11 @@ function useLocInfo() {
   }
 }
 
+/*
+ * Function: positionSuccess()
+ * FUNCTION DESCRIPTION HERE
+ * 
+ */
 function positionSuccess(pos) {
   changeGSToLoading();
   numFuncCalls1++;
@@ -39,6 +58,11 @@ function positionSuccess(pos) {
   }, timeForAccuracy);
 }
 
+/*
+ * Function: positionError()
+ * FUNCTION DESCRIPTION HERE
+ * 
+ */
 function positionError(error) {
   var errors = { 
     1: 'Permission denied',
