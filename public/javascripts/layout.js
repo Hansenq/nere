@@ -2,10 +2,10 @@
 function setUsersHeight() {
 
   // Initialize height to 100%
-  $('.users').height($(document).height());
+  $('.sidebar .users').height($(document).height());
 
   // Correct height
-  $('.users').height($('.users').height() - 232);
+  $('.sidebar .users').height($('.sidebar .users').height() - 232);
 
 }
 

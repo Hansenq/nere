@@ -84,7 +84,7 @@ Room.prototype.addSocket = function (socket) {
   this.numUsers++;
   var hasSpace = false;
   for (var i = 0; i < this.sockets.length; i++) {
-    if (this.sockets[i] === null) {
+    if (this.sockets[i] == null) {
       this.sockets[i] = socket;
       hasSpace = true;
     }
@@ -130,7 +130,7 @@ function addRoom(roomId) {
       exists = true;
       return rooms[i];
     }
-    if (rooms[i] === null && nullVal === -1) {
+    if (rooms[i] == null && nullVal === -1) {
       nullVal = i;
     }
   }
@@ -164,7 +164,7 @@ function findNearestRoomLoc(latitude, longitude) {
   var distSq = 1000000000, room = null;
   for (var i = 0; i < rooms.length; i++) {
     room = rooms[i];
-    if (room === null) {
+    if (room == null) {
       nullVal = i;
       continue;
     }
@@ -198,51 +198,31 @@ function findNearestRoomLoc(latitude, longitude) {
 function getRoomFromId(roomId) {
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i] !== null && rooms[i].id === roomId) {
+    if (rooms[i] !== null && rooms[i].id == roomId) {
       console.log('Found this room from the following id: ' + roomId);
       //console.log(rooms[i]);
       return rooms[i];
     }
-    if (rooms[i] === null && nullVal === -1) {
+    if (rooms[i] == null && nullVal === -1) {
       nullVal = i;
     }
   }
-  var room = new Room(roomId);
-  if (nullVal !== -1) {
-    rooms[nullVal] = room;
-  } else {
-    rooms[rooms.length] = room;
-  }
-  console.log('Found no room corresponding to id ' + roomId + ' so created one.');
-  //console.log(room);
-  return room;
+  console.log('==========No fitting room found!==========');
+  return null;
 }
 
 io.sockets.on('connection', function (socket) {
   // Socket managerial functions
-  function changeRoomFromId(newRoomId) {
-    var newRoom = getRoomFromId(newRoomId);
-    io.sockets.in(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);
-    socket.room.removeSocket(socket);
-    socket.leave(socket.room.id);
-    socket.room = newRoom;
-    socket.join(socket.room.id);
-    socket.room.addSocket(socket);
-    //socket.emit('Join room', newRoom.name, newRoom.id);
-    //socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIds());
-    socket.emit('Change room', socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
-    socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
-  } 
 
   function changeRoom(newRoom) {
     io.sockets.in(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);
     socket.room.removeSocket(socket);
     socket.leave(socket.room.id);
     socket.room = newRoom;
-    socket.join(socket.room.id);
+    socket.join(newRoom.id);
     socket.room.addSocket(socket);
-    socket.emit('Change room', socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
-    socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
+    socket.emit('Change room', newRoom.id, newRoom.name, getLobbyNames(), getLobbyIds());
+    socket.broadcast.to(newRoom.id).emit('Display new nearby user', socket.clientName, socket.clientId);
   } 
 
 
@@ -313,7 +293,12 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('Change room', function(newRoomId) {
     if (socket.room.id !== newRoomId) {
-      changeRoomFromId(getRoomFromId(newRoomId));
+      var newRoom = getRoomFromId(newRoomId);
+      if (newRoom == null) {
+        changeRoom(addRoom(newRoomId));
+      } else {
+        changeRoom(newRoom);
+      }
     }
   });
 
@@ -321,6 +306,7 @@ io.sockets.on('connection', function (socket) {
     var newRoom = addRoom(new Date().getTime());
     newRoom.name = newRoomName;
     newRoom.desc = newRoomDesc;
+    newRoom.purpose = 'private room';
     changeRoom(newRoom);
   });
 
@@ -349,7 +335,7 @@ io.sockets.on('connection', function (socket) {
     socket.room.addSocket(socket);
     socket.join(socket.room.id);
 
-    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
+    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds(), false);
     //socket.emit('Join room', socket.room.name);
     //socket.emit('Update client name', socket.clientName);
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
@@ -364,11 +350,14 @@ io.sockets.on('connection', function (socket) {
     socket.clientId = id;
 
     socket.room = getRoomFromId(ip);
+    if (socket.room == null ) {
+      socket.room = addRoom(ip);
+    }
     socket.room.addSocket(socket);
     socket.join(socket.room.id);
     console.log('Joining room ' + ip);
 
-    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
+    socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds(), true);
     //socket.emit('Join room', socket.room.name);
     //socket.emit('Update client name', socket.clientName);
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);

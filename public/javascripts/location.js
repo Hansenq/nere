@@ -7,7 +7,7 @@ function useIpAddr() {
 }
 
 function useLocInfo() {
-  if (answeredLocQues == false) {
+  if (answeredLocQues === false) {
     answeredLocQues = true;
     socket.coords = {
       latitude: position.coords.latitude,
@@ -46,7 +46,7 @@ function positionError(error) {
     3: 'Request timeout'
   };
   console.log('Position error: ' + errors[error.code]);
-  if (answeredLocQues == false) {
+  if (answeredLocQues === false) {
     changeGSToLoading();
     answeredLocQues = true;
     useIpAddr();
