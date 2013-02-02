@@ -348,6 +348,7 @@ socket.on('reconnecting', function() {
 socket.on('error', function(e) {
   if (!shownError) {
     messageAlert(e ? e : 'An unknown error occurred. Try refreshing the page!', 'alert alert-error');
+    messageAlert('An error occurred. Try refreshing the page!', 'alert alert-error');
     shownError = true;
   }
   dismissAllModals();

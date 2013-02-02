@@ -1,3 +1,46 @@
+@media (max-width: 767px) {
+
+  .main {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    z-index: -1;
+    overflow-y: scroll;
+  }
+
+  .main .main-block{
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 75px;
+  }
+
+  .modal-body {
+    max-height: 480px;
+  }
+
+}
+
+@media (min-width: 767px) {
+
+  .main {
+    position: fixed;
+    height: 100%;
+    width: 80%;
+    left: 0;
+    z-index: -1;
+    overflow-y: scroll;
+  }
+
+  .main .main-block{
+    padding-top: 95px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 75px;
+  }
+}
+
 .navbar .container {
   width: 90%;
 }
@@ -12,10 +55,6 @@
 .loading {
   margin: 0 auto;
   text-align: center;
-}
-
-.modal-body {
-  max-height: 75%;
 }
 
 #roomsModal .rooms .create-room textarea {
@@ -179,45 +218,6 @@
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   border-radius: 0px;
-}
-
-@media (max-width: 767px) {
-
-  .main {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    left: 0;
-    z-index: -1;
-    overflow-y: scroll;
-  }
-
-  .main .main-block{
-    padding-top: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 75px;
-  }
-
-}
-
-@media (min-width: 767px) {
-
-  .main {
-    position: fixed;
-    height: 100%;
-    width: 80%;
-    left: 0;
-    z-index: -1;
-    overflow-y: scroll;
-  }
-
-  .main .main-block{
-    padding-top: 95px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 75px;
-  }
 }
 
 .main .main-block .posts-container {
