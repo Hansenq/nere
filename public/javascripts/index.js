@@ -125,6 +125,7 @@ socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyI
 });
 
 socket.on('Change room', function(roomId, roomName, lobbyNames, lobbyIds) {
+  dismissAllModals();
   $('.room-block input').val(decodeHTML(roomName));
   $('.users').empty();
   for (var i=0; i<lobbyNames.length; i++){
@@ -237,7 +238,6 @@ socket.on('Display nearby rooms', function (roomNames, roomIds, roomDescs, roomC
     $('#roomsModal .modal-body .rooms').html('Error: Unable to retrieve Rooms. Please refresh the page.');
     return;
   }
-  // Given Room name, room id, room description, 
 
   // Displays Rooms only within searchRadius
   var roomDists = [];

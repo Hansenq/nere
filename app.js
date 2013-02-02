@@ -128,19 +128,21 @@ function addRoom(roomId) {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].id === roomId) {
       exists = true;
+      return rooms[i];
     }
     if (rooms[i] === null && nullVal === -1) {
       nullVal = i;
     }
   }
   var room = new Room(roomId);
-  if (exists = false) {
-    if (nullVal === -1) {
+  if (exists === false) {
+    if (nullVal !== -1) {
       rooms[nullVal] = room;
     } else {
       rooms[rooms.length] = room;
     }
   }
+  return room;
   console.log('Added a new room ' + roomId);
   //console.log(room);
 }
@@ -228,7 +230,7 @@ io.sockets.on('connection', function (socket) {
     socket.room.addSocket(socket);
     //socket.emit('Join room', newRoom.name, newRoom.id);
     //socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIds());
-    socket.emit('Change room', newRoom.id, newRoom.name, getLobbyNames(), getLobbyIds());
+    socket.emit('Change room', socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
   } 
 
@@ -239,8 +241,6 @@ io.sockets.on('connection', function (socket) {
     socket.room = newRoom;
     socket.join(socket.room.id);
     socket.room.addSocket(socket);
-    //socket.emit('Join room', newRoom.name, newRoom.id);
-    //socket.emit('Refresh all lobby users', getLobbyNames(), getLobbyIds());
     socket.emit('Change room', socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds());
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
   } 
@@ -296,13 +296,13 @@ io.sockets.on('connection', function (socket) {
     var roomCents = [];
 
     for (var i = 0; i < rooms.length; i++){
-      if (rooms[i] !== null) {
+      if (rooms[i] != null) {
         roomNames[roomNames.length] = rooms[i].name;
         roomIds[roomIds.length] = rooms[i].id;
         roomDescs[roomDescs.length] = rooms[i].desc;
         roomCents[roomCents.length] = {
           latitude: rooms[i].latitude,
-          longitude: rooms[i].longitude,
+          longitude: rooms[i].longitude
         };
       }
     }
@@ -376,7 +376,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
-    if (socket.room !== null){
+    if (socket.room != null){
       socket.room.removeSocket(this);
       console.log('Leaving room: ' + socket);
       socket.broadcast.to(socket.room.id).emit('Delete user', socket.clientName, socket.clientId);
