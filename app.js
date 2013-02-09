@@ -223,6 +223,9 @@ io.sockets.on('connection', function (socket) {
     socket.join(newRoom.id);
     socket.room.addSocket(socket);
     socket.emit('Change room', newRoom.id, newRoom.name, getLobbyNames(), getLobbyIds());
+    for (var i = 0; i < socket.room.chats.length; i++) {
+      socket.emit('Display new chat', socket.room.chats[i].chatObj, socket.room.chats[i].senderName);
+    }
     socket.broadcast.to(newRoom.id).emit('Display new nearby user', socket.clientName, socket.clientId);
   } 
 
@@ -358,7 +361,7 @@ io.sockets.on('connection', function (socket) {
     socket.clientId = id;
 
     socket.room = getRoomFromId(ip);
-    if (socket.room == null ) {
+    if (socket.room == null) {
       socket.room = addRoom(ip);
     }
     socket.room.addSocket(socket);
@@ -366,6 +369,9 @@ io.sockets.on('connection', function (socket) {
     console.log('Joining room ' + ip);
 
     socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds(), true);
+    for (var i = 0; i < socket.room.chats.length; i++) {
+      socket.emit('Display new chat', socket.room.chats[i].chatObj, socket.room.chats[i].senderName);
+    }
     //socket.emit('Join room', socket.room.name);
     //socket.emit('Update client name', socket.clientName);
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);
