@@ -88,7 +88,10 @@ $(document).ready(function() {
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
-      socket.emit('Send new chat', encodeHTML($(this).val()), socket.clientName);
+      socket.emit('Send new chat', {
+        time: (new Date()).getTime(),
+        chat: encodeHTML($(this).val())
+      }, socket.clientName);
         // Clear client input
         $(this).val('').focus();
       }

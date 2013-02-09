@@ -195,8 +195,8 @@ function initializeSocket(socket){
    * LISTENER DESCRIPTION HERE
    * 
    */
-  socket.on('Display new chat', function (chat, senderName){
-    message(chat, senderName);
+  socket.on('Display new chat', function (chatObj, senderName){
+    message(chatObj.chat, senderName);
   });
 
   /* -------------------- Nearby Rooms Event Listeners -------------------- */

@@ -73,6 +73,7 @@ function Room (id) {
   this.latitude = 0;
   this.longitude = 0;
   this.sockets = [];
+  this.chats = [];
 }
 
 Room.prototype.addSocket = function (socket) {
@@ -126,7 +127,7 @@ function addRoom(roomId) {
   var exists = false;
   var nullVal = -1;
   for (var i = 0; i < rooms.length; i++) {
-    if (rooms[i].id === roomId) {
+    if (rooms[i] != null &&  rooms[i].id === roomId) {
       exists = true;
       return rooms[i];
     }
@@ -318,8 +319,12 @@ io.sockets.on('connection', function (socket) {
     io.sockets.in(socket.room.id).emit('Display new file', fpfile, senderName);
   });
 
-  socket.on('Send new chat', function (chat, senderName) {
-    io.sockets.in(socket.room.id).emit('Display new chat', chat, senderName);
+  socket.on('Send new chat', function (inChatObj, inSenderName) {
+    io.sockets.in(socket.room.id).emit('Display new chat', inChatObj, inSenderName);
+    socket.room.chats[socket.room.chats.length] = {
+      senderName: inSenderName,
+      chatObj: inChatObj
+    };
   });
 
   // Runs on connection, with location info
@@ -336,6 +341,9 @@ io.sockets.on('connection', function (socket) {
     socket.join(socket.room.id);
 
     socket.emit('Initialize room', socket.clientName, socket.room.id, socket.room.name, getLobbyNames(), getLobbyIds(), false);
+    for (var i = 0; i < socket.room.chats.length; i++) {
+      socket.emit('Display new chat', socket.room.chats[i].chatObj, socket.room.chats[i].senderName);
+    }
     //socket.emit('Join room', socket.room.name);
     //socket.emit('Update client name', socket.clientName);
     socket.broadcast.to(socket.room.id).emit('Display new nearby user', socket.clientName, socket.clientId);

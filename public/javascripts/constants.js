@@ -21,8 +21,8 @@ var numFuncCalls1 = 0;
 var numFuncCalls2 = 0;
 
 // VARIABLE DESCRIPTION HERE
-var timeForAccuracy = 3000;
+var timeForAccuracy = 1500;
 var position = null;
 
 // Radius (in meters) of room searches
-var searchRadius = 500;
+var searchRadius = 1000;
