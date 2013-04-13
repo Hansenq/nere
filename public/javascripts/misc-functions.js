@@ -6,7 +6,7 @@
  * 
  */
 
-/* -------------------- Distance Computation Functions -------------------- */
+ /* -------------------- Distance Computation Functions -------------------- */
 
 /*
  * Function: calcDist
@@ -15,7 +15,7 @@
  * http://www.movable-type.co.uk/scripts/latlong.html
  * 
  */
-function calcDist(x1, y1, x2, y2) {
+ function calcDist(x1, y1, x2, y2) {
   x1 = x1 / 180 * Math.PI;
   x2 = x2 / 180 * Math.PI;
   y1 = y1 / 180 * Math.PI;
@@ -32,7 +32,7 @@ function calcDist(x1, y1, x2, y2) {
  * FUNCTION DESCRIPTION HERE
  * 
  */
-function message(chat, senderName) {
+ function message(chat, senderName) {
   if (senderName == null) {
     $('.posts-container').append('<emph><strong>System</strong>:&nbsp;&nbsp;' + chat + '</emph><br>');     
   } else {
@@ -47,7 +47,7 @@ function message(chat, senderName) {
  * FUNCTION DESCRIPTION HERE
  * 
  */
-function messageAlert(chat, alertClass) {
+ function messageAlert(chat, alertClass) {
   if (alertClass == "" || alertClass === 'System') {
     message(chat, 'System');
     return;
@@ -64,8 +64,11 @@ function messageAlert(chat, alertClass) {
  * FUNCTION DESCRIPTION HERE
  * 
  */
-function encodeHTML(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+ function encodeHTML(s) {
+  if (typeof s === "string")
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  else
+    return s;
 }
 
 /*
@@ -73,7 +76,7 @@ function encodeHTML(s) {
  * FUNCTION DESCRIPTION HERE
  * 
  */
-function decodeHTML(s) {
+ function decodeHTML(s) {
   if (typeof s === "string")
     return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
   else
@@ -87,7 +90,7 @@ function decodeHTML(s) {
  * FUNCTION DESCRIPTION HERE
  * 
  */
-function dismissAllModals() {
+ function dismissAllModals() {
   $('#gsModal').modal('hide');
   $('#roomsModal').modal('hide');
   $('#aboutModal').modal('hide');
@@ -99,6 +102,6 @@ function dismissAllModals() {
  * FUNCTION DESCRIPTION HERE
  * 
  */
-function changeGSToLoading() {
+ function changeGSToLoading() {
   $('#gsModal .modal-body').html('<div class="img-center loading"><img src="/images/loading.gif" /><p>Loading...</p></div>');
 }

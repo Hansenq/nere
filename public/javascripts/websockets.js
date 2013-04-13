@@ -19,8 +19,8 @@ function initializeSocket(socket){
 	 */
   socket.on('Initialize room', function(name, roomId, roomName, lobbyNames, lobbyIds, ipCheck) {
     dismissAllModals();
-    $('.self-block input').val(decodeHTML(name));
-    $('.room-block input').val(decodeHTML(roomName));
+    $('.self-block input').val(encodeHTML(name));
+    $('.room-block input').val(encodeHTML(roomName));
     for (var i=0; i<lobbyNames.length; i++){
       $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIds[i] + '">' + lobbyNames[i] + '</strong></div>');
     }
@@ -69,7 +69,7 @@ function initializeSocket(socket){
     dismissAllModals();
     socket.roomId = roomId;
     socket.roomName = roomName;
-    $('.room-block input').val(decodeHTML(roomName));
+    $('.room-block input').val(encodeHTML(roomName));
     $('.users').empty();
     for (var i=0; i<lobbyNames.length; i++){
       $('.users').append('<div class="user-block"><i class="icon-user"></i>&nbsp;&nbsp;<strong id="' + lobbyIds[i] + '">' + lobbyNames[i] + '</strong></div>');
@@ -88,8 +88,8 @@ function initializeSocket(socket){
 	 */
   socket.on('Update room name', function(roomName, clientName) {
     socket.roomName = roomName;
-    $('.room-block input').val(decodeHTML(roomName));
-    messageAlert('<em>' + clientName + '</em> has changed the room name to <em>' + decodeHTML(roomName) + '</em>!', 'alert alert-info');
+    $('.room-block input').val(encodeHTML(roomName));
+    messageAlert('<em>' + clientName + '</em> has changed the room name to <em>' + encodeHTML(roomName) + '</em>!', 'alert alert-info');
   });
 
   /* -------------------- Client Event Listeners -------------------- */
@@ -101,7 +101,7 @@ function initializeSocket(socket){
    */
   socket.on('Update client name', function (name) {
     socket.clientName = name;
-    $('.self-block input').val(decodeHTML(name));
+    $('.self-block input').val(encodeHTML(name));
   });
 
   /* -------------------- Room Members Event Listeners -------------------- */
@@ -196,7 +196,7 @@ function initializeSocket(socket){
    * 
    */
   socket.on('Display new chat', function (chatObj, senderName){
-    message(chatObj.chat, senderName);
+    message   (chatObj.chat, senderName);
   });
 
   /* -------------------- Nearby Rooms Event Listeners -------------------- */

@@ -5,7 +5,7 @@
  * 
  */
 
-/* -------------------- Socket Initialization -------------------- */
+ /* -------------------- Socket Initialization -------------------- */
 
 // Retrieve user and datetime information
 var username = checkCookie('username');
@@ -43,6 +43,10 @@ var watchId = null;
 
 $(document).ready(function() {
 
+  // Initialize tooltips!
+  $('.self-block input').tooltip({placement: 'left'});
+  $('.room-block input').tooltip({placement: 'left'});
+
   // Display "Get Started" modal
   $('#gsModal').modal('show');
 
@@ -70,7 +74,7 @@ $(document).ready(function() {
    * Checks roomId first, in case user has neither confirmed nor denied location
    * 
    */
-  $('.file-sender').click(function(){
+   $('.file-sender').click(function(){
     if (socket.roomId != null) {
       filepicker.pick({mimetypes:['image/*', 'text/*']}, function(fpfile){
         socket.emit('Send new file', fpfile, socket.clientName);
@@ -83,14 +87,14 @@ $(document).ready(function() {
    * Enables client to chat
    * 
    */
-  $('.messenger .chat-sender input').keypress(function(event) {
+   $('.messenger .chat-sender input').keypress(function(event) {
     // Send chat when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
       socket.emit('Send new chat', {
         time: (new Date()).getTime(),
-        chat: encodeHTML($(this).val())
+        chat: $(this).val()
       }, socket.clientName);
         // Clear client input
         $(this).val('').focus();
@@ -102,10 +106,10 @@ $(document).ready(function() {
    * Enables client to change current room name
    * 
    */
-  $('.room-block input').keypress(function(event) {
+   $('.room-block input').keypress(function(event) {
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
-      var newRoomName = encodeHTML($(this).val().trim());
+      var newRoomName = $(this).val().trim();
       $(this).blur();
       if (newRoomName == null || newRoomName === socket.roomName) {
         console.log('New name is empty, null, or unchanged!');
@@ -122,12 +126,12 @@ $(document).ready(function() {
    * Enables saving to cookies for 1 day
    * 
    */
-  $('.self-block input').keypress(function(event) {
+   $('.self-block input').keypress(function(event) {
     // Saves name to cookies when client presses enter (13)
     // Check roomId in case user neither confirmed NOR denied location
     if (event.which === 13 && $(this).val() !== "" && socket.roomId != null) {
       event.preventDefault();
-      var newName = encodeHTML($(this).val().trim());
+      var newName = $(this).val().trim();
       $(this).blur();
       var un = checkCookie();
       if (newName == null || newName === socket.clientName){
@@ -145,4 +149,4 @@ $(document).ready(function() {
     dismissAllModals();
   });
 
-});
+ });
